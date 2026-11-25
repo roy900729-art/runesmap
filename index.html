@@ -506,6 +506,68 @@
       <div id="learningStagesContainer" class="space-y-6"></div>
     </section>
 
+    <!-- 2.5 SPREADS -->
+    <section id="spreadSection" aria-label="牌陣學習與抽牌" class="rounded-3xl nordic-surface shadow-stoneCard p-6 sm:p-8 space-y-5">
+      <div class="border-b border-white/10 pb-4">
+        <span class="text-xs font-semibold uppercase tracking-widest text-emberBright">SPREADS · 牌陣學習</span>
+        <h2 class="font-serifTc text-xl sm:text-2xl font-bold text-parchment mt-1">牌陣：把多個符文串成一個故事</h2>
+        <p class="text-xs sm:text-sm text-mutedText mt-1">
+          先點選下方位置，看看每個位置在問什麼；再依牌陣抽牌，逐張翻開並跟著引導問題練習解讀。
+        </p>
+      </div>
+
+      <div id="spreadTabs" class="flex flex-wrap gap-2" role="tablist" aria-label="選擇牌陣"></div>
+      <p id="spreadIntro" class="text-xs sm:text-sm text-parchment/90 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
+        <div class="lg:col-span-3 space-y-4">
+          <div id="spreadStage"></div>
+          <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <input
+              id="spreadQuestionInput"
+              type="text"
+              placeholder="這次想問的事（選填）"
+              class="flex-1 rounded-xl bg-obsidian/90 border border-white/15 focus:border-emberBright focus:outline-none px-3.5 py-2.5 text-xs sm:text-sm text-parchment placeholder:text-mutedText/60"
+            />
+            <button
+              id="spreadDrawBtn"
+              type="button"
+              onclick="drawSpread()"
+              class="px-4 py-2.5 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-xs font-semibold transition-colors shadow-emberGlow shrink-0"
+            >
+              ✦ 依此牌陣抽牌
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-3">
+          <div id="spreadPosInfo" class="rounded-2xl bg-obsidian/80 border border-white/10 p-4 space-y-2 min-h-[9rem]"></div>
+          <div id="spreadSummary"></div>
+        </div>
+      </div>
+
+      <div id="spreadNoteBox" class="hidden space-y-1.5">
+        <label for="spreadNote" class="block text-xs font-semibold text-parchment">
+          我的解讀（把幾張牌串成一段話，自動儲存）
+        </label>
+        <textarea
+          id="spreadNote"
+          rows="3"
+          oninput="handleSpreadNote(this.value)"
+          placeholder="例如：因為……所以現在……接下來可以……"
+          class="w-full rounded-xl bg-charcoal border border-white/15 focus:border-emberBright focus:outline-none p-3 text-xs sm:text-sm text-parchment placeholder:text-mutedText/55 leading-relaxed"
+        ></textarea>
+      </div>
+
+      <div class="space-y-2 pt-1 border-t border-white/10">
+        <div class="flex items-center justify-between gap-2 pt-3">
+          <h3 class="text-xs font-semibold text-parchment">最近的牌陣紀錄</h3>
+          <button type="button" onclick="clearSpreadLogs()" class="text-[11px] text-mutedText hover:text-parchment underline underline-offset-4">清空牌陣紀錄</button>
+        </div>
+        <div id="spreadHistory" class="space-y-2"></div>
+      </div>
+    </section>
+
     <!-- 3. DAILY DRAW & DIVINATION LOGBOOK -->
     <section id="drawLogbookSection" aria-label="每日一抽與占卜紀錄本" class="rounded-3xl nordic-surface shadow-stoneCard p-6 sm:p-8 space-y-5">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-white/10 pb-4">
@@ -2008,6 +2070,7 @@
           practiceDone: runePracticeMap,
           drawLogs: drawLogsList,
           review: reviewMap,
+          spreadLogs: spreadLogs,
           globalNotes: document.getElementById('globalNotesTextarea')?.value || ''
         };
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -2074,6 +2137,12 @@
           if (Array.isArray(data.drawLogs)) {
             drawLogsList = data.drawLogs.slice(0, 60);
             safeWriteJson(STORAGE_KEYS.drawLogs, drawLogsList);
+          }
+
+          if (Array.isArray(data.spreadLogs)) {
+            spreadLogs = data.spreadLogs.slice(0, 30);
+            saveSpreadLogs();
+            renderSpread(false);
           }
 
           if (data.review && typeof data.review === 'object') {
@@ -3010,6 +3079,12 @@
     let reviewIdx = 0;
     let reviewStats = { ok: 0, bad: 0 };
 
+    /* ---------- 牌陣紀錄資料（牌陣功能在後方獨立區塊） ---------- */
+    const SPREAD_KEY = 'futhark_atlas_spread_logs_v1';
+    let spreadLogs = safeReadJson(SPREAD_KEY, []);
+    if (!Array.isArray(spreadLogs)) spreadLogs = [];
+    function saveSpreadLogs() { safeWriteJson(SPREAD_KEY, spreadLogs); }
+
     /* ---------- 1. 進度光暈與餘燼粒子 ---------- */
     function updateProgressGlow() {
       let score = 0;
@@ -3575,7 +3650,8 @@
           Object.values(runeStatusMap).some(s => s !== 'unexplored') ||
           Object.keys(runeNotesMap).length > 0 ||
           Object.keys(runeReflectionsMap).length > 0 ||
-          drawLogsList.length > 0;
+          drawLogsList.length > 0 ||
+          spreadLogs.length > 0;
         if (hasData && days >= 7) {
           showSystemNotice(`你已經 ${days} 天沒有備份學習紀錄了。筆記只存在這個瀏覽器，建議點右上角「匯出 JSON」備份一次。`);
         }
@@ -3716,6 +3792,347 @@
       renderLearningMap();
       checkBackupReminder();
     })();
+  </script>
+
+  <script>
+    /* =====================================================
+     * 牌陣學習與抽牌（四種經典牌陣）
+     * 說明文字為自行撰寫的通用說明，各流派的位置名稱可能略有不同
+     * ===================================================== */
+    const SPREAD_ROWS = ['過去', '現在', '未來'];
+    const SPREAD_COLS = [
+      { t: '處境', d: '外在發生了什麼事，環境與人際的樣貌。', a: '這個符文描述的處境，對應到你生活中的哪件事？' },
+      { t: '內心', d: '你的感受、想法與反應。', a: '這張符文反映的是你怎樣的內在狀態？' },
+      { t: '提醒', d: '這個階段留給你的功課或建議。', a: '這個符文給的功課，你可以怎麼做到？' }
+    ];
+
+    const SPREADS = {
+      single: {
+        name: '單符文',
+        cols: 1,
+        maxW: 'max-w-[180px]',
+        intro: '最簡單的牌陣，適合每天早上或睡前問一個問題。重點不是預測，而是替今天定下一個覺察的方向。',
+        reading: '先看關鍵詞，再想想今天會在哪一件事上遇到這個主題。',
+        positions: [
+          { title: '今日指引', desc: '這張符文是你今天可以特別留意的主題，不必當成預言。', ask: '這個符文的主題，今天可能在哪個場景出現？', r: 1, c: 1 }
+        ]
+      },
+      norns: {
+        name: '三符文．諾恩三女神',
+        cols: 3,
+        maxW: 'max-w-xl',
+        intro: '取自北歐神話中掌管命運的三位諾恩：烏爾德、薇兒丹蒂、斯庫爾德。適合看一件事的來龍去脈。',
+        reading: '由左至右讀，把三張連成一句話：因為（過去）……所以現在……接下來……',
+        positions: [
+          { title: '過去（烏爾德）', desc: '已經發生、並塑造出現況的根源。', ask: '這個符文描述的經驗，如何影響了現在的你？', r: 1, c: 1 },
+          { title: '現在（薇兒丹蒂）', desc: '此刻正在發生、需要你面對的狀態。', ask: '此刻你最需要看清楚的是什麼？', r: 1, c: 2 },
+          { title: '未來（斯庫爾德）', desc: '照目前的走向，可能形成的趨勢，而不是定局。', ask: '如果想調整這個走向，你可以從哪裡開始？', r: 1, c: 3 }
+        ]
+      },
+      cross: {
+        name: '五符文十字',
+        cols: 3,
+        maxW: 'max-w-md',
+        intro: '常見的現代牌陣，適合有具體困擾或抉擇的時候。不同流派的位置名稱略有差異，這裡用最常見的一種。',
+        reading: '先讀中心，再讀挑戰與根基，最後看建議與走向，把它們串成一個前因後果。',
+        positions: [
+          { title: '現況', desc: '事情現在的核心樣貌。', ask: '用一句話說，現在的狀況其實是什麼？', r: 2, c: 2 },
+          { title: '挑戰', desc: '目前的阻礙，或需要克服的功課。', ask: '這個符文點出的阻礙，是外在的還是來自你自己？', r: 1, c: 2 },
+          { title: '根基', desc: '在背後支撐、或是潛藏的影響。', ask: '有什麼在背後默默影響著這件事？', r: 3, c: 2 },
+          { title: '建議', desc: '可以調整、或是該放下的做法。', ask: '這個符文建議你多做什麼，或少做什麼？', r: 2, c: 1 },
+          { title: '走向', desc: '如果維持目前的做法，可能的發展。', ask: '你喜歡這個走向嗎？不喜歡的話，要改變哪一步？', r: 2, c: 3 }
+        ]
+      },
+      nine: {
+        name: '九符文．三組三符文',
+        cols: 3,
+        maxW: 'max-w-md',
+        intro: '把「過去、現在、未來」各展開成三張，從「處境、內心、提醒」三個角度細看，適合想深入看一個主題時。',
+        reading: '先逐列讀（過去→現在→未來），再逐欄讀（處境、內心、提醒各自怎麼變化），最後看逆位集中在哪個位置。',
+        positions: SPREAD_ROWS.flatMap((row, ri) =>
+          SPREAD_COLS.map((col, ci) => ({
+            title: `${row}・${col.t}`,
+            desc: `${row}階段的「${col.t}」：${col.d}`,
+            ask: col.a,
+            r: ri + 1,
+            c: ci + 1
+          }))
+        )
+      }
+    };
+
+    const AETT_LABEL = { freyr: '弗雷', heimdall: '海姆達爾', tyr: '提爾', blank: '未知' };
+    let activeSpreadKey = 'norns';
+    let spreadDraw = null; // { id, key, cards: [{ runeId, reversed }] }
+    let spreadSel = 0;
+    let spreadFlipTimers = [];
+    let spreadNoteTimer = null;
+
+    function escHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function currentDraw() {
+      return spreadDraw && spreadDraw.key === activeSpreadKey ? spreadDraw : null;
+    }
+
+    function setSpread(key) {
+      if (!SPREADS[key]) return;
+      activeSpreadKey = key;
+      spreadSel = 0;
+      renderSpread(false);
+    }
+
+    function selectSpreadSlot(i) {
+      spreadSel = i;
+      document.querySelectorAll('#spreadStage .spread-slot').forEach((el, idx) => {
+        const on = idx === i;
+        el.classList.toggle('border-emberBright', on);
+        el.classList.toggle('bg-slateStone/80', on);
+        el.classList.toggle('border-white/12', !on);
+        el.classList.toggle('bg-obsidian/70', !on);
+      });
+      renderSpreadPosInfo();
+    }
+
+    function slotHtml(sp, p, i, draw, flipped) {
+      const sel = i === spreadSel;
+      let card;
+      const c = draw && draw.cards[i];
+      const rune = c && RUNE_MAP[c.runeId];
+      if (rune) {
+        const rev = !!c.reversed;
+        const tone = rev ? 'text-frostBright' : 'text-emberBright';
+        card = `
+          <div class="flip-scene">
+            <div class="flip-card aspect-[3/4] w-full ${flipped ? 'is-flipped' : ''}" data-flip="${i}">
+              <div class="flip-face rounded-xl border border-bronze/50 bg-gradient-to-br from-slateStone to-obsidian flex items-center justify-center">
+                <span class="font-display text-2xl text-ember/70">ᛟ</span>
+              </div>
+              <div class="flip-face flip-back-face rounded-xl border ${rev ? 'border-frost/60' : 'border-emberBright/60'} bg-charcoal flex flex-col items-center justify-center gap-0.5 p-1">
+                <span class="font-display text-3xl sm:text-4xl ${tone}" style="${rev ? 'transform:rotate(180deg)' : ''}">${rune.glyph}</span>
+                <span class="text-[10px] sm:text-xs text-parchment font-serifTc truncate max-w-full">${rune.nameZh}</span>
+                <span class="text-[9px] ${tone}">${rune.id === 'blank_unknown' ? '未知' : rev ? '逆位' : '正位'}</span>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        card = '<div class="aspect-[3/4] rounded-xl border border-dashed border-white/15 flex items-center justify-center text-mutedText/50 font-display text-2xl">᛫</div>';
+      }
+      return `
+        <button type="button" class="spread-slot text-left rounded-2xl p-2 border transition-colors ${sel ? 'border-emberBright bg-slateStone/80' : 'border-white/12 bg-obsidian/70 hover:border-ember/50'}"
+          style="grid-row:${p.r};grid-column:${p.c}" onclick="selectSpreadSlot(${i})" aria-label="位置 ${i + 1}：${p.title}">
+          <div class="flex items-center gap-1.5 mb-1.5">
+            <span class="w-5 h-5 rounded-full bg-ember/20 text-emberBright text-[10px] font-semibold flex items-center justify-center shrink-0">${i + 1}</span>
+            <span class="text-[11px] text-parchment truncate">${p.title}</span>
+          </div>
+          ${card}
+        </button>`;
+    }
+
+    function renderSpreadPosInfo() {
+      const box = document.getElementById('spreadPosInfo');
+      if (!box) return;
+      const sp = SPREADS[activeSpreadKey];
+      const p = sp.positions[spreadSel] || sp.positions[0];
+      const draw = currentDraw();
+      const c = draw && draw.cards[spreadSel];
+      const rune = c && RUNE_MAP[c.runeId];
+
+      let html = `
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-ember/20 text-emberBright text-xs font-semibold flex items-center justify-center">${spreadSel + 1}</span>
+          <h4 class="font-serifTc font-bold text-parchment">${p.title}</h4>
+        </div>
+        <p class="text-xs sm:text-sm text-mutedText leading-relaxed">${p.desc}</p>`;
+
+      if (!rune) {
+        html += `<p class="text-xs text-frostBright leading-relaxed">引導問題：${p.ask}</p>
+                 <p class="text-[11px] text-mutedText">按「依此牌陣抽牌」後，這裡會顯示該位置符文的解讀引導。</p>`;
+      } else {
+        const rev = !!c.reversed;
+        const isBlank = rune.id === 'blank_unknown';
+        const heading = isBlank ? '未知：結果尚未明朗，或此刻不知道才是最好的。' : (rev ? rune.shadowHeading : rune.uprightHeading) || rune.coreMeaning;
+        const kws = (rune.keywords || []).slice(0, 4)
+          .map(k => `<span class="px-2 py-0.5 rounded-full text-[11px] bg-charcoal border border-bronze/40 text-parchment">${escHtml(k)}</span>`).join('');
+        const q1 = (rune.reflectionQuestions || [])[0];
+        html += `
+          <div class="border-t border-white/10 pt-2 space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="font-display text-4xl ${rev ? 'text-frostBright' : 'text-emberBright'}" style="${rev ? 'transform:rotate(180deg);display:inline-block' : ''}">${rune.glyph}</span>
+              <div>
+                <div class="font-serifTc font-bold text-parchment">${rune.nameZh} ${rune.nameEn}</div>
+                <div class="text-[11px] ${rev ? 'text-frostBright' : 'text-emberBright'}">${isBlank ? '未知' : rev ? '逆位 · 陰影提醒' : '正位 · 核心能量'}</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-1.5">${kws}</div>
+            <p class="text-xs sm:text-sm text-parchment/90 leading-relaxed">${escHtml(heading)}</p>
+            <p class="text-xs text-frostBright leading-relaxed">位置引導：${p.ask}</p>
+            ${q1 ? `<p class="text-xs text-mutedText leading-relaxed">符文反思：${escHtml(q1)}</p>` : ''}
+            <button type="button" onclick="openRuneFromLog('${rune.id}', ${rev ? 'true' : 'false'})" class="text-xs font-semibold text-emberBright hover:text-emberBright/80">查看完整講義 →</button>
+          </div>`;
+      }
+      box.innerHTML = html;
+    }
+
+    function renderSpreadSummary() {
+      const box = document.getElementById('spreadSummary');
+      if (!box) return;
+      const draw = currentDraw();
+      if (!draw) { box.innerHTML = ''; return; }
+      const sp = SPREADS[activeSpreadKey];
+      const cards = draw.cards.filter(c => RUNE_MAP[c.runeId]);
+      const revCount = cards.filter(c => c.reversed).length;
+      const aett = {};
+      cards.forEach(c => {
+        const k = RUNE_MAP[c.runeId].aettKey;
+        aett[k] = (aett[k] || 0) + 1;
+      });
+      const aettText = Object.keys(aett).map(k => `${AETT_LABEL[k] || k} ${aett[k]}`).join(' · ');
+      const items = draw.cards.map((c, i) => {
+        const r = RUNE_MAP[c.runeId];
+        const p = sp.positions[i];
+        if (!r || !p) return '';
+        const rev = !!c.reversed;
+        return `<li class="flex items-baseline gap-2">
+          <span class="text-mutedText">${i + 1}.</span>
+          <span class="text-parchment">${p.title}</span>
+          <span class="${rev ? 'text-frostBright' : 'text-emberBright'}">${r.glyph} ${r.nameZh}（${r.id === 'blank_unknown' ? '未知' : rev ? '逆' : '正'}）</span>
+        </li>`;
+      }).join('');
+      box.innerHTML = `
+        <div class="rounded-2xl bg-obsidian/70 border border-frost/30 p-4 space-y-2">
+          <h4 class="text-xs font-semibold text-frostBright">整體解讀引導</h4>
+          <p class="text-xs text-parchment/90 leading-relaxed">${sp.reading}</p>
+          <p class="text-[11px] text-mutedText">逆位 ${revCount} / ${cards.length} · 符文組：${aettText}</p>
+          <ol class="space-y-1 text-xs">${items}</ol>
+        </div>`;
+    }
+
+    function renderSpreadTabs() {
+      const tabs = document.getElementById('spreadTabs');
+      if (!tabs) return;
+      tabs.innerHTML = Object.keys(SPREADS).map(k => {
+        const sp = SPREADS[k];
+        const active = k === activeSpreadKey;
+        return `<button type="button" role="tab" aria-selected="${active}" onclick="setSpread('${k}')"
+          class="px-3.5 py-2 rounded-xl text-xs sm:text-sm transition-all ${active
+            ? 'font-semibold bg-ember text-obsidian shadow-emberGlow'
+            : 'font-medium bg-obsidian/80 hover:bg-slateStone text-parchment/85 border border-white/10'}">${sp.name} · ${sp.positions.length}張</button>`;
+      }).join('');
+    }
+
+    function renderSpreadHistory() {
+      const box = document.getElementById('spreadHistory');
+      if (!box) return;
+      const valid = spreadLogs.filter(e => e && SPREADS[e.spread] && Array.isArray(e.cards) && e.cards.every(c => c && RUNE_MAP[c.runeId]));
+      if (!valid.length) {
+        box.innerHTML = '<div class="rounded-2xl bg-obsidian/70 border border-white/10 p-4 text-xs text-mutedText">還沒有牌陣紀錄。抽一次牌陣，就會留在這裡。</div>';
+        return;
+      }
+      box.innerHTML = valid.slice(0, 6).map(e => {
+        const glyphs = e.cards.map(c => `<span class="${c.reversed ? 'text-frostBright' : 'text-emberBright'}" style="${c.reversed ? 'display:inline-block;transform:rotate(180deg)' : ''}">${RUNE_MAP[c.runeId].glyph}</span>`).join(' ');
+        const q = e.question ? `提問：${escHtml(e.question)}` : '未填提問';
+        return `<div class="rounded-2xl bg-obsidian/85 border border-white/10 hover:border-ember/45 p-3 flex items-center justify-between gap-3 transition-colors">
+          <div class="min-w-0 space-y-0.5">
+            <div class="flex items-center gap-2 flex-wrap text-xs">
+              <span class="font-serifTc font-bold text-parchment">${SPREADS[e.spread].name}</span>
+              <span class="text-[11px] text-mutedText">${escHtml(e.dateStr || '')}</span>
+            </div>
+            <div class="font-display text-xl tracking-widest">${glyphs}</div>
+            <p class="text-[11px] text-mutedText truncate">${q}</p>
+          </div>
+          <button type="button" onclick="restoreSpread('${escHtml(e.id)}')" class="px-3 py-1.5 rounded-xl bg-charcoal hover:bg-slateStone border border-white/15 text-xs font-semibold text-emberBright shrink-0">重看</button>
+        </div>`;
+      }).join('');
+    }
+
+    function renderSpread(animate) {
+      spreadFlipTimers.forEach(clearTimeout);
+      spreadFlipTimers = [];
+      const sp = SPREADS[activeSpreadKey];
+      const draw = currentDraw();
+      const stage = document.getElementById('spreadStage');
+      if (!stage) return;
+
+      renderSpreadTabs();
+      document.getElementById('spreadIntro').textContent = sp.intro;
+      stage.innerHTML = `<div class="grid gap-2.5 sm:gap-3 mx-auto ${sp.maxW}" style="grid-template-columns:repeat(${sp.cols},minmax(0,1fr))">${
+        sp.positions.map((p, i) => slotHtml(sp, p, i, draw, !animate)).join('')
+      }</div>`;
+
+      if (draw && animate) {
+        stage.querySelectorAll('[data-flip]').forEach((el, i) => {
+          spreadFlipTimers.push(setTimeout(() => el.classList.add('is-flipped'), REDUCED_MOTION ? 50 : 350 + i * 380));
+        });
+      }
+
+      document.getElementById('spreadDrawBtn').textContent = draw ? '↻ 重新抽牌' : '✦ 依此牌陣抽牌';
+      document.getElementById('spreadNoteBox').classList.toggle('hidden', !draw);
+      renderSpreadPosInfo();
+      renderSpreadSummary();
+      renderSpreadHistory();
+    }
+
+    function drawSpread() {
+      const sp = SPREADS[activeSpreadKey];
+      const ids = RUNES_DATA.map(r => r.id);
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      const cards = ids.slice(0, sp.positions.length).map(id => ({
+        runeId: id,
+        reversed: id !== 'blank_unknown' && Math.random() < 0.5
+      }));
+      const now = new Date();
+      const entry = {
+        id: `sp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        dateStr: `${now.getFullYear()}/${pad2(now.getMonth() + 1)}/${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`,
+        spread: activeSpreadKey,
+        question: (document.getElementById('spreadQuestionInput').value || '').trim(),
+        cards,
+        note: ''
+      };
+      spreadLogs = [entry, ...spreadLogs].slice(0, 30);
+      saveSpreadLogs();
+      spreadDraw = { id: entry.id, key: activeSpreadKey, cards };
+      spreadSel = 0;
+      document.getElementById('spreadNote').value = '';
+      renderSpread(true);
+    }
+
+    function handleSpreadNote(val) {
+      const draw = currentDraw();
+      if (!draw) return;
+      clearTimeout(spreadNoteTimer);
+      spreadNoteTimer = setTimeout(() => {
+        const e = spreadLogs.find(x => x.id === draw.id);
+        if (e) { e.note = val; saveSpreadLogs(); }
+      }, 400);
+    }
+
+    function restoreSpread(id) {
+      const e = spreadLogs.find(x => x.id === id);
+      if (!e || !SPREADS[e.spread]) return;
+      activeSpreadKey = e.spread;
+      spreadDraw = { id: e.id, key: e.spread, cards: e.cards };
+      spreadSel = 0;
+      document.getElementById('spreadQuestionInput').value = e.question || '';
+      document.getElementById('spreadNote').value = e.note || '';
+      renderSpread(false);
+      document.getElementById('spreadSection').scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
+    }
+
+    function clearSpreadLogs() {
+      spreadLogs = [];
+      saveSpreadLogs();
+      spreadDraw = null;
+      document.getElementById('spreadNote').value = '';
+      renderSpread(false);
+    }
+
+    renderSpread(false);
   </script>
 </body>
 </html>
