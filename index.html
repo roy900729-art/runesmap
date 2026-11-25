@@ -1,0 +1,3721 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古弗薩克盧恩學習地圖 · Elder Futhark Learning Map</title>
+
+  <!-- Google Fonts: Cinzel, Cormorant Garamond, Noto Serif TC, Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#0D1217',
+            charcoal: '#151D26',
+            slateStone: '#1D2733',
+            bronze: '#9C6634',
+            ember: '#D97724',
+            emberBright: '#F0943D',
+            frost: '#5BA4B5',
+            frostBright: '#82C5D4',
+            parchment: '#E8E0CB',
+            mutedText: '#A89F8E'
+          },
+          fontFamily: {
+            display: ['Cinzel', 'Cormorant Garamond', 'Noto Serif TC', 'serif'],
+            serifTc: ['Noto Serif TC', 'Cormorant Garamond', 'serif'],
+            sansTc: ['Noto Sans TC', 'sans-serif']
+          },
+          boxShadow: {
+            emberGlow: '0 0 28px rgba(217, 119, 36, 0.25), inset 0 1px 0 rgba(232, 224, 203, 0.08)',
+            frostGlow: '0 0 26px rgba(91, 164, 181, 0.22), inset 0 1px 0 rgba(232, 224, 203, 0.08)',
+            stoneCard: '0 18px 42px -14px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(232, 224, 203, 0.06)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* 北歐深色石板、青銅與餘燼背景 */
+    body {
+      background-color: #0D1217;
+      color: #E8E0CB;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(217, 119, 36, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 88% 14%, rgba(91, 164, 181, 0.09) 0%, transparent 42%),
+        radial-gradient(circle at 50% 92%, rgba(156, 102, 52, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(13, 18, 23, 0.98) 0%, rgba(9, 13, 17, 1) 100%);
+      overflow-x: hidden;
+    }
+
+    .nordic-surface {
+      background: linear-gradient(155deg, rgba(29, 39, 51, 0.92) 0%, rgba(21, 29, 38, 0.97) 100%);
+      border: 1px solid rgba(232, 224, 203, 0.14);
+    }
+
+    .nordic-surface-ember {
+      background: linear-gradient(155deg, rgba(38, 38, 42, 0.94) 0%, rgba(21, 29, 38, 0.98) 100%);
+      border: 1px solid rgba(217, 119, 36, 0.38);
+    }
+
+    .nordic-surface-frost {
+      background: linear-gradient(155deg, rgba(26, 38, 47, 0.94) 0%, rgba(19, 27, 36, 0.98) 100%);
+      border: 1px solid rgba(91, 164, 181, 0.36);
+    }
+
+    .map-node {
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .map-node:hover {
+      transform: translateY(-3px);
+    }
+
+    .map-node-guided {
+      border-color: #F0943D !important;
+      box-shadow: 0 0 0 2px rgba(240, 148, 61, 0.4), 0 14px 28px -10px rgba(217, 119, 36, 0.5);
+    }
+
+    .stroke-canvas {
+      touch-action: none;
+      background-image:
+        linear-gradient(to right, rgba(232, 224, 203, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(232, 224, 203, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    @keyframes panelReveal {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .panel-reveal {
+      animation: panelReveal 0.22s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+
+    @keyframes emberPulse {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .pulse-aura {
+      animation: emberPulse 3.6s ease-in-out infinite;
+    }
+
+    /* ===== 石刻質感 ===== */
+    :root {
+      --stone-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .88 0 0 0 0 .8 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .nordic-surface {
+      background-image: var(--stone-noise), linear-gradient(155deg, rgba(29, 39, 51, 0.92) 0%, rgba(21, 29, 38, 0.97) 100%);
+    }
+    .nordic-surface-ember {
+      background-image: var(--stone-noise), linear-gradient(155deg, rgba(38, 38, 42, 0.94) 0%, rgba(21, 29, 38, 0.98) 100%);
+    }
+    .nordic-surface-frost {
+      background-image: var(--stone-noise), linear-gradient(155deg, rgba(26, 38, 47, 0.94) 0%, rgba(19, 27, 36, 0.98) 100%);
+    }
+    .map-node {
+      background-image: var(--stone-noise);
+    }
+    .map-node:not(.map-node-guided) {
+      box-shadow: inset 0 1px 0 rgba(232, 224, 203, 0.07), inset 0 -10px 18px rgba(0, 0, 0, 0.32);
+    }
+
+    /* ===== 翻牌 ===== */
+    .flip-scene { perspective: 1100px; }
+    .flip-card {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+      outline: none;
+    }
+    .flip-card.is-flipped { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .flip-back-face { transform: rotateY(180deg); }
+
+    /* ===== 圓環地圖 ===== */
+    .ring-node { cursor: pointer; outline: none; transition: opacity 0.2s ease; }
+    .ring-body {
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .ring-node:hover .ring-body,
+    .ring-node:focus-visible .ring-body { transform: scale(1.16); }
+    .ring-node:focus-visible circle { stroke: #F0943D; }
+
+    kbd {
+      display: inline-block;
+      min-width: 1.4em;
+      text-align: center;
+      padding: 0 0.35em;
+      margin: 0 1px;
+      border-radius: 5px;
+      border: 1px solid rgba(232, 224, 203, 0.22);
+      background: rgba(13, 18, 23, 0.8);
+      color: #E8E0CB;
+      font-size: 10px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pulse-aura, .panel-reveal { animation: none !important; }
+      .flip-card { transition-duration: 0.01s; }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0D1217;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2C394A;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #40526A;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-ember/30 selection:text-parchment">
+
+  <!-- 氛圍層：進度光暈 + 餘燼粒子（固定在內容後方） -->
+  <div
+    id="progressGlow"
+    aria-hidden="true"
+    class="pointer-events-none fixed inset-0 -z-10"
+    style="opacity:.2; transition: opacity 1.4s ease; background: radial-gradient(ellipse at 50% 105%, rgba(240,148,61,.30), transparent 60%), radial-gradient(circle at 12% 6%, rgba(240,148,61,.18), transparent 45%), radial-gradient(circle at 90% 10%, rgba(130,197,212,.10), transparent 40%);"
+  ></div>
+  <canvas id="ambientCanvas" aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10"></canvas>
+
+  <!-- 頂部青銅與餘燼裝飾線 -->
+  <div class="h-1 w-full bg-gradient-to-r from-frost/60 via-emberBright to-bronze"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8">
+
+    <!-- 1. TOP HEADER & PROGRESS -->
+    <header class="relative rounded-3xl nordic-surface shadow-stoneCard p-6 sm:p-8 lg:p-10 overflow-hidden">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none select-none absolute -right-4 -top-6 font-display text-[9rem] sm:text-[13rem] leading-none text-parchment/[0.03]"
+      >
+        ᚠᚢᚨ
+      </div>
+
+      <div class="relative z-10 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div class="space-y-3 max-w-3xl">
+            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-obsidian/85 border border-bronze/40 text-xs text-parchment/90 tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-emberBright pulse-aura"></span>
+              <span>ELDER FUTHARK 24 RUNES · 互動式盧恩學習地圖</span>
+            </div>
+
+            <h1 class="font-serifTc text-3xl sm:text-5xl font-bold tracking-wide text-parchment leading-tight">
+              古弗薩克盧恩學習地圖
+              <span class="block sm:inline font-display text-lg sm:text-2xl font-medium text-emberBright sm:ml-2 tracking-widest">
+                · Elder Futhark Learning Map
+              </span>
+            </h1>
+
+            <p class="text-mutedText text-sm sm:text-base leading-relaxed max-w-2xl">
+              循著古弗薩克三大符文組與實戰階段走過盧恩符文，點擊任一符文卡片或節點即可展開詳細研習面板。
+            </p>
+          </div>
+
+          <!-- 快捷操作按鈕 -->
+          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              id="guidedDrawBtn"
+              type="button"
+              onclick="triggerGuidedDraw()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-ember hover:bg-emberBright text-obsidian text-xs sm:text-sm font-semibold transition-all shadow-emberGlow active:scale-[0.99]"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.03.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.03-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+              </svg>
+              <span>隨緣抽牌 / 學習引導</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="exportStudyBackup()"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-obsidian/90 hover:bg-slateStone text-parchment border border-white/15 text-xs sm:text-sm font-medium transition-all"
+            >
+              <span>匯出 JSON</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="triggerImportBackup()"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-obsidian/90 hover:bg-slateStone text-parchment border border-white/15 text-xs sm:text-sm font-medium transition-all"
+            >
+              <span>匯入還原</span>
+            </button>
+            <input
+              id="importBackupInput"
+              type="file"
+              accept=".json,application/json"
+              onchange="handleImportBackupFile(event)"
+              class="hidden"
+            />
+          </div>
+        </div>
+
+        <!-- 備份與抽牌操作狀態提示 -->
+        <div
+          id="systemNoticeBar"
+          class="hidden rounded-2xl bg-slateStone/85 border border-frost/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs sm:text-sm"
+        >
+          <span id="systemNoticeText" class="text-parchment"></span>
+          <button
+            type="button"
+            onclick="hideSystemNotice()"
+            class="text-xs text-mutedText hover:text-parchment shrink-0"
+          >
+            知道了
+          </button>
+        </div>
+
+        <!-- 學習引導提示橫幅 -->
+        <div
+          id="guidedBanner"
+          class="hidden rounded-2xl bg-slateStone/90 border border-emberBright/45 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+          <div class="space-y-0.5">
+            <span id="guidedBadge" class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-ember/20 text-emberBright">
+              下一步學習引導
+            </span>
+            <p id="guidedMessage" class="text-xs sm:text-sm text-parchment"></p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button
+              id="guidedOpenBtn"
+              type="button"
+              class="px-3.5 py-1.5 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-xs font-semibold transition-colors"
+            >
+              開啟符文 →
+            </button>
+            <button
+              type="button"
+              onclick="hideGuidedBanner()"
+              class="px-3 py-1.5 rounded-xl bg-obsidian/80 hover:bg-charcoal text-mutedText hover:text-parchment border border-white/10 text-xs transition-colors"
+            >
+              收合
+            </button>
+          </div>
+        </div>
+
+        <!-- 整體探索進度條 -->
+        <div class="rounded-2xl bg-obsidian/75 border border-white/10 p-4 sm:p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="text-mutedText">探索進度：<strong id="progressCountText" class="text-parchment">0 / 25</strong></span>
+              <span class="text-mutedText">已探索：<strong id="exploredCountText" class="text-frostBright">0</strong></span>
+              <span class="text-mutedText">已學會：<strong id="masteredCountText" class="text-emberBright">0</strong></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <strong id="progressPercentText" class="font-display text-emberBright">0%</strong>
+              <button
+                type="button"
+                onclick="resetLearningProgress()"
+                class="text-xs text-mutedText hover:text-parchment underline underline-offset-4"
+              >
+                重設進度
+              </button>
+            </div>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-charcoal overflow-hidden border border-white/5">
+            <div
+              id="overallProgressBar"
+              class="h-full bg-gradient-to-r from-frostBright via-ember to-emberBright transition-all duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- 階段篩選列與搜尋框 -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2" role="tablist" aria-label="盧恩符文組與階段篩選">
+            <button
+              type="button"
+              data-filter="all"
+              onclick="setStageFilter('all')"
+              class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+            >
+              全部 25 符文
+            </button>
+            <button
+              type="button"
+              data-filter="freyr"
+              onclick="setStageFilter('freyr')"
+              class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all"
+            >
+              第一組 · 弗雷之組（1–8）
+            </button>
+            <button
+              type="button"
+              data-filter="heimdall"
+              onclick="setStageFilter('heimdall')"
+              class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all"
+            >
+              第二組 · 海姆達爾／自然組（9–16）
+            </button>
+            <button
+              type="button"
+              data-filter="tyr"
+              onclick="setStageFilter('tyr')"
+              class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all"
+            >
+              第三組 · 提爾之組（17–24）
+            </button>
+            <button
+              type="button"
+              data-filter="blank"
+              onclick="setStageFilter('blank')"
+              class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all"
+            >
+              空白符文 · 未知（25）
+            </button>
+          </div>
+
+          <div class="relative flex items-center w-full lg:w-72">
+            <input
+              id="runeSearchInput"
+              type="search"
+              oninput="handleSearchInput(this.value)"
+              placeholder="搜尋符文名稱、字義、天體或關鍵字…"
+              class="w-full rounded-xl bg-obsidian/90 border border-white/15 focus:border-emberBright focus:outline-none pl-3.5 pr-14 py-2 text-xs sm:text-sm text-parchment placeholder:text-mutedText/60"
+            />
+            <button
+              id="clearSearchBtn"
+              type="button"
+              onclick="clearRuneSearch()"
+              class="hidden absolute right-2 text-xs text-mutedText hover:text-parchment px-1.5 py-0.5"
+            >
+              清除
+            </button>
+          </div>
+        </div>
+
+        <!-- 學習狀態與天體／星座快速篩選列 -->
+        <div class="flex flex-col gap-2.5 pt-1 border-t border-white/10">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-xs text-mutedText mr-1">學習狀態：</span>
+            <button
+              type="button"
+              data-status-filter="all"
+              onclick="setStatusFilter('all')"
+              class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+            >
+              全部狀態
+            </button>
+            <button
+              type="button"
+              data-status-filter="unlearned"
+              onclick="setStatusFilter('unlearned')"
+              class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+            >
+              待複習／未學會
+            </button>
+            <button
+              type="button"
+              data-status-filter="explored"
+              onclick="setStatusFilter('explored')"
+              class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+            >
+              已探索
+            </button>
+            <button
+              type="button"
+              data-status-filter="mastered"
+              onclick="setStatusFilter('mastered')"
+              class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+            >
+              已學會
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-xs text-mutedText mr-1">天體／星座：</span>
+            <button type="button" data-celestial-filter="all" onclick="setCelestialFilter('all')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all">全部</button>
+            <button type="button" data-celestial-filter="木星" onclick="setCelestialFilter('木星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">木星 ♃</button>
+            <button type="button" data-celestial-filter="太陽" onclick="setCelestialFilter('太陽')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">太陽 ☉</button>
+            <button type="button" data-celestial-filter="火星" onclick="setCelestialFilter('火星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">火星 ♂</button>
+            <button type="button" data-celestial-filter="月亮" onclick="setCelestialFilter('月亮')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">月亮 ☽</button>
+            <button type="button" data-celestial-filter="金星" onclick="setCelestialFilter('金星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">金星 ♀</button>
+            <button type="button" data-celestial-filter="水星" onclick="setCelestialFilter('水星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">水星 ☿</button>
+            <button type="button" data-celestial-filter="海王星" onclick="setCelestialFilter('海王星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">海王星 ♆</button>
+            <button type="button" data-celestial-filter="冥王星" onclick="setCelestialFilter('冥王星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">冥王星 ♇</button>
+            <button type="button" data-celestial-filter="天王星" onclick="setCelestialFilter('天王星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">天王星 ♅</button>
+            <button type="button" data-celestial-filter="土星" onclick="setCelestialFilter('土星')" class="celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all">土星 ♄</button>
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- 2. LEARNING MAP -->
+    <section id="learningMapSection" aria-label="符文學習地圖" class="space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="inline-flex rounded-xl bg-obsidian/85 p-1 border border-white/10" role="tablist" aria-label="檢視模式">
+            <button id="viewBtn-cards" type="button" onclick="setMapView('cards')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors">▦ 卡片</button>
+            <button id="viewBtn-ring" type="button" onclick="setMapView('ring')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors">◎ 圓環地圖</button>
+          </div>
+          <button
+            id="reviewDueBtn"
+            type="button"
+            onclick="startReview()"
+            class="hidden px-3.5 py-2 rounded-xl bg-frost/20 hover:bg-frost/30 text-frostBright border border-frost/45 text-xs font-semibold transition-colors"
+          >
+            📚 今日待複習 <strong id="reviewDueCount">0</strong> 個
+          </button>
+        </div>
+        <p class="hidden md:block text-[11px] text-mutedText">
+          快捷鍵：<kbd>/</kbd> 搜尋 · <kbd>←</kbd><kbd>→</kbd> 切換符文 · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 狀態 · <kbd>S</kbd> 正逆位 · <kbd>P</kbd> 筆順
+        </p>
+      </div>
+
+      <div id="learningStagesContainer" class="space-y-6"></div>
+    </section>
+
+    <!-- 3. DAILY DRAW & DIVINATION LOGBOOK -->
+    <section id="drawLogbookSection" aria-label="每日一抽與占卜紀錄本" class="rounded-3xl nordic-surface shadow-stoneCard p-6 sm:p-8 space-y-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-widest text-frostBright">DIVINATION LOGBOOK · 每日一抽與占卜歷史</span>
+          <h2 class="font-serifTc text-xl sm:text-2xl font-bold text-parchment mt-1">
+            每日指引抽牌與占卜紀錄本
+          </h2>
+          <p class="text-xs sm:text-sm text-mutedText mt-1">
+            記錄你每天想問的問題、抽到的盧恩符文與當下直覺；若抽到「25 未知（空白）」也可依講義指示再抽一次並留存紀錄。
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onclick="drawDailyRune(false)"
+            class="px-4 py-2 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-xs font-semibold transition-colors shadow-emberGlow"
+          >
+            ✦ 抽取今日指引
+          </button>
+          <button
+            type="button"
+            onclick="drawDailyRune(true)"
+            class="px-3.5 py-2 rounded-xl bg-slateStone hover:bg-[#273344] text-frostBright border border-frost/35 text-xs font-semibold transition-colors"
+          >
+            ↻ 未知再抽一次
+          </button>
+          <button
+            type="button"
+            onclick="clearDrawLogs()"
+            class="px-3 py-2 rounded-xl bg-obsidian/80 hover:bg-slateStone text-mutedText hover:text-parchment border border-white/10 text-xs transition-colors"
+          >
+            清空紀錄
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+        <div class="lg:col-span-1 rounded-2xl bg-obsidian/80 border border-white/10 p-4 space-y-3">
+          <label for="drawQuestionInput" class="block text-xs font-semibold text-parchment">
+            今日提問或關注焦點（選填）
+          </label>
+          <input
+            id="drawQuestionInput"
+            type="text"
+            placeholder="例如：今天我需要知道什麼？或想如何處理某段關係…"
+            class="w-full rounded-xl bg-charcoal border border-white/15 focus:border-emberBright focus:outline-none px-3.5 py-2.5 text-xs sm:text-sm text-parchment placeholder:text-mutedText/60"
+          />
+          <p class="text-[11px] text-mutedText leading-relaxed">
+            抽牌後會自動寫入下方紀錄列表，並可隨時點開該符文進入研習面板或補記當日體悟。
+          </p>
+        </div>
+
+        <div id="drawHistoryList" class="lg:col-span-2 space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- 4. PERSONAL STUDY NOTES STAGING -->
+    <section id="referenceNotesSection" aria-label="總覽參考資料與筆記區" class="rounded-3xl nordic-surface shadow-stoneCard p-6 sm:p-8 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-widest text-emberBright">STUDY NOTES · 總覽筆記與擴充槽</span>
+          <h2 class="font-serifTc text-xl sm:text-2xl font-bold text-parchment mt-1">
+            個人總覽筆記與參考資料草稿
+          </h2>
+          <p class="text-xs sm:text-sm text-mutedText mt-1">
+            每個符文面板內皆有專屬「個人學習筆記」與「反思記錄」；這裡也可存放跨符文的總覽筆記或待貼上的新資料（自動儲存於 <code class="text-parchment/90">localStorage</code>）。
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onclick="saveGlobalNotes(true)"
+            class="px-3.5 py-2 rounded-xl bg-ember/20 hover:bg-ember/30 text-emberBright border border-ember/40 text-xs font-semibold transition-colors"
+          >
+            儲存總覽筆記
+          </button>
+          <button
+            type="button"
+            onclick="copyGlobalNotes()"
+            class="px-3.5 py-2 rounded-xl bg-slateStone hover:bg-[#273344] text-parchment border border-white/15 text-xs font-medium transition-colors"
+          >
+            複製筆記內容
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <textarea
+          id="globalNotesTextarea"
+          rows="4"
+          oninput="saveGlobalNotes(false)"
+          placeholder="在這裡記錄跨符文的觀察、占卜牌陣心得或想補充的講義重點……"
+          class="w-full rounded-2xl bg-obsidian/90 border border-white/15 focus:border-emberBright focus:outline-none p-4 text-sm text-parchment placeholder:text-mutedText/60 leading-relaxed"
+        ></textarea>
+        <div class="flex items-center justify-between text-xs text-mutedText">
+          <span id="globalNotesStatus">尚未輸入總覽筆記</span>
+          <button
+            type="button"
+            onclick="clearGlobalNotes()"
+            class="hover:text-parchment underline underline-offset-4"
+          >
+            清空總覽筆記
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 5. SLIDE-OVER STUDY DRAWER (DESKTOP/TABLET) & RESPONSIVE DETAIL MODAL -->
+  <div
+    id="runeDetailOverlay"
+    onclick="handleOverlayClick(event)"
+    class="fixed inset-0 z-50 hidden bg-black/80 flex items-end sm:items-stretch sm:justify-end"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="detailTitle"
+  >
+    <aside
+      id="runeDetailPanel"
+      class="panel-reveal w-full sm:max-w-2xl bg-charcoal border-t sm:border-t-0 sm:border-l border-bronze/45 max-h-[92vh] sm:max-h-screen overflow-y-auto rounded-t-3xl sm:rounded-none p-6 sm:p-8 flex flex-col justify-between gap-7 shadow-2xl"
+    >
+      <div class="space-y-6">
+        <!-- 頂部標題與關閉按鈕 -->
+        <div class="flex items-start justify-between gap-4 border-b border-white/10 pb-4 sticky top-0 bg-charcoal z-20 -mx-6 sm:-mx-8 px-6 sm:px-8 pt-1 pb-4">
+          <div class="flex items-center gap-4 min-w-0">
+            <div
+              id="detailGlyphBadge"
+              class="w-16 h-20 rounded-2xl bg-obsidian border border-ember/45 flex items-center justify-center font-display text-4xl text-emberBright shrink-0"
+            >
+              ᚠ
+            </div>
+            <div class="min-w-0">
+              <span id="detailStageTag" class="text-xs font-semibold text-emberBright block truncate">
+                第一組 · 弗雷之組
+              </span>
+              <h3 id="detailTitle" class="font-serifTc text-2xl sm:text-3xl font-bold text-parchment mt-0.5 truncate">
+                費胡 Fehu
+              </h3>
+              <p id="detailSubtitle" class="text-xs sm:text-sm text-mutedText mt-0.5">
+                第 1 符文 · 字母 F · 發音 F / V
+              </p>
+            </div>
+          </div>
+
+          <button
+            id="closeDetailBtn"
+            type="button"
+            onclick="closeRuneDetail()"
+            aria-label="關閉符文詳情"
+            class="px-3.5 py-2 rounded-xl bg-obsidian hover:bg-slateStone border border-white/20 text-xs font-semibold text-parchment transition-colors shrink-0"
+          >
+            ✕ 關閉
+          </button>
+        </div>
+
+        <!-- 學習狀態切換與「標記已學會」快捷開關 -->
+        <div class="rounded-2xl bg-obsidian/85 border border-white/10 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-parchment">
+              學習狀態：<strong id="detailStatusLabel" class="text-emberBright">未探索</strong>
+            </span>
+            <button
+              id="quickMarkLearnedBtn"
+              type="button"
+              onclick="toggleQuickLearned()"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all"
+            >
+              ✓ 標記為已學會
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button
+              id="statusPill-unexplored"
+              type="button"
+              onclick="setRuneLearningStatus(currentDetailRuneId, 'unexplored')"
+              class="py-2 px-2.5 rounded-xl text-xs font-medium border transition-all"
+            >
+              未探索
+            </button>
+            <button
+              id="statusPill-explored"
+              type="button"
+              onclick="setRuneLearningStatus(currentDetailRuneId, 'explored')"
+              class="py-2 px-2.5 rounded-xl text-xs font-medium border transition-all"
+            >
+              已探索
+            </button>
+            <button
+              id="statusPill-mastered"
+              type="button"
+              onclick="setRuneLearningStatus(currentDetailRuneId, 'mastered')"
+              class="py-2 px-2.5 rounded-xl text-xs font-medium border transition-all"
+            >
+              已學會
+            </button>
+          </div>
+        </div>
+
+        <!-- 核心屬性資訊卡 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+          <div class="rounded-2xl bg-obsidian/70 border border-white/10 p-3.5">
+            <span class="text-[11px] text-mutedText block">核心字義與代表意義</span>
+            <strong id="detailCoreMeaning" class="text-parchment font-semibold mt-0.5 block"></strong>
+          </div>
+          <div class="rounded-2xl bg-obsidian/70 border border-white/10 p-3.5">
+            <span class="text-[11px] text-mutedText block">天體／星座或元素關聯</span>
+            <strong id="detailAssociation" class="text-frostBright font-semibold mt-0.5 block"></strong>
+          </div>
+        </div>
+
+        <!-- 關鍵詞 -->
+        <div class="space-y-2">
+          <div class="text-xs font-semibold text-mutedText">核心關鍵詞</div>
+          <div id="detailKeywords" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- 正位／核心能量 vs. 逆位／陰影面 切換 -->
+        <div class="rounded-2xl bg-obsidian/80 border border-bronze/35 p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emberBright">
+              能量面向解析
+            </span>
+            <div class="inline-flex rounded-xl bg-charcoal p-1 border border-white/10">
+              <button
+                id="modeTab-upright"
+                type="button"
+                onclick="setDetailEnergyMode('upright')"
+                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+              >
+                正位／核心能量
+              </button>
+              <button
+                id="modeTab-shadow"
+                type="button"
+                onclick="setDetailEnergyMode('shadow')"
+                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+              >
+                逆位／陰影提醒
+              </button>
+            </div>
+          </div>
+
+          <h4 id="detailEnergyHeading" class="font-serifTc text-base sm:text-lg font-bold text-parchment"></h4>
+          <div id="detailEnergyBody" class="space-y-3 text-xs sm:text-sm text-parchment/90 leading-relaxed"></div>
+        </div>
+
+        <!-- 符文筆畫示範與描繪練習板 -->
+        <div class="rounded-2xl bg-obsidian/80 border border-frost/35 p-4 sm:p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h4 class="text-xs sm:text-sm font-semibold text-frostBright">
+                符文筆畫示範與描繪練習板
+              </h4>
+              <p id="strokeGuideHint" class="text-[11px] text-mutedText mt-0.5">
+                可切換顯示淡色底稿描繪，或用滑鼠／手指在石板上自由練習書寫符文。
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button
+                id="toggleGuideBtn"
+                type="button"
+                onclick="toggleStrokeGuide()"
+                class="px-2.5 py-1.5 rounded-xl bg-charcoal hover:bg-slateStone border border-frost/35 text-[11px] font-semibold text-frostBright transition-colors"
+              >
+                底稿：開啟
+              </button>
+              <button
+                type="button"
+                onclick="clearStrokeCanvas()"
+                class="px-2.5 py-1.5 rounded-xl bg-charcoal hover:bg-slateStone border border-white/15 text-[11px] font-medium text-parchment transition-colors"
+              >
+                清除畫板
+              </button>
+            </div>
+          </div>
+
+          <div class="relative rounded-2xl bg-charcoal/90 border border-white/10 overflow-hidden">
+            <canvas
+              id="runeStrokeCanvas"
+              class="stroke-canvas w-full h-44 sm:h-48 block cursor-crosshair"
+            ></canvas>
+          </div>
+        </div>
+
+        <!-- 神話與象徵脈絡 -->
+        <div class="rounded-2xl bg-obsidian/65 border border-white/10 p-4 space-y-1.5">
+          <h4 class="text-xs font-semibold text-frostBright">神話意象與象徵脈絡</h4>
+          <p id="detailMythBody" class="text-xs sm:text-sm text-mutedText leading-relaxed"></p>
+        </div>
+
+        <!-- 靜心／實作練習區（含可勾選步驟） -->
+        <div class="rounded-2xl bg-obsidian/80 border border-ember/35 p-4 sm:p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 id="detailPracticeTitle" class="text-xs sm:text-sm font-semibold text-emberBright">
+              靜心與實作練習
+            </h4>
+            <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-parchment select-none">
+              <input
+                id="detailPracticeDoneCheckbox"
+                type="checkbox"
+                onchange="handlePracticeCheckbox(this.checked)"
+                class="w-4 h-4 rounded accent-amber-500 cursor-pointer"
+              />
+              <span>已完成練習</span>
+            </label>
+          </div>
+          <p id="detailPracticeBody" class="text-xs sm:text-sm text-parchment/90 leading-relaxed whitespace-pre-line"></p>
+          <div id="detailPracticeSteps" class="space-y-2 pt-1"></div>
+        </div>
+
+        <!-- 反思問題與專屬反思輸入框 -->
+        <div class="rounded-2xl bg-obsidian/75 border border-white/12 p-4 sm:p-5 space-y-3">
+          <h4 class="text-xs sm:text-sm font-semibold text-parchment">停下來反思（Pause & Reflect）</h4>
+          <ol id="detailReflectionQuestions" class="list-decimal list-inside space-y-1.5 text-xs sm:text-sm text-mutedText leading-relaxed"></ol>
+
+          <div class="pt-2 space-y-1.5">
+            <label for="detailReflectionTextarea" class="block text-xs text-mutedText">
+              你的反思記錄（自動儲存於本機）
+            </label>
+            <textarea
+              id="detailReflectionTextarea"
+              rows="3"
+              oninput="handleRuneReflectionChange(this.value)"
+              placeholder="寫下你對反思問題的回答、閃過的念頭或徵兆察覺……"
+              class="w-full rounded-xl bg-charcoal border border-white/15 focus:border-emberBright focus:outline-none p-3 text-xs sm:text-sm text-parchment placeholder:text-mutedText/55 leading-relaxed"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- 總結區塊 -->
+        <div class="rounded-2xl bg-slateStone/75 border border-bronze/40 p-4 sm:p-5 space-y-1.5">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-emberBright">總結</h4>
+          <p id="detailSummaryBody" class="text-xs sm:text-sm text-parchment font-medium leading-relaxed"></p>
+        </div>
+
+        <!-- 個人學習筆記（每個符文獨立儲存） -->
+        <div class="rounded-2xl bg-obsidian/80 border border-frost/30 p-4 sm:p-5 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <label for="detailPersonalNoteTextarea" class="text-xs sm:text-sm font-semibold text-frostBright">
+              此符文個人學習筆記（自動儲存）
+            </label>
+            <span id="detailNoteSavedBadge" class="text-[11px] text-mutedText">本機自動保存</span>
+          </div>
+          <textarea
+            id="detailPersonalNoteTextarea"
+            rows="3"
+            oninput="handleRunePersonalNoteChange(this.value)"
+            placeholder="記錄你對此符文的解讀重點、占卜經驗或補充資料……"
+            class="w-full rounded-xl bg-charcoal border border-white/15 focus:border-frostBright focus:outline-none p-3 text-xs sm:text-sm text-parchment placeholder:text-mutedText/55 leading-relaxed"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- 底部前後切換與關閉 -->
+      <div class="pt-4 border-t border-white/10 flex items-center justify-between gap-3 sticky bottom-0 bg-charcoal -mx-6 sm:-mx-8 px-6 sm:px-8 pb-1 pt-4">
+        <button
+          type="button"
+          onclick="navigateAdjacentRune(-1)"
+          class="px-4 py-2.5 rounded-xl bg-obsidian hover:bg-slateStone border border-white/15 text-xs font-medium text-parchment transition-colors"
+        >
+          ← 上一個符文
+        </button>
+
+        <button
+          type="button"
+          onclick="closeRuneDetail()"
+          class="px-4 py-2.5 rounded-xl bg-ember/20 hover:bg-ember/30 border border-ember/40 text-xs font-semibold text-emberBright transition-colors"
+        >
+          完成並返回地圖
+        </button>
+
+        <button
+          type="button"
+          onclick="navigateAdjacentRune(1)"
+          class="px-4 py-2.5 rounded-xl bg-obsidian hover:bg-slateStone border border-white/15 text-xs font-medium text-parchment transition-colors"
+        >
+          下一個符文 →
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    /**
+     * 古弗薩克 24 個盧恩符文完整資料
+     * Fehu、Uruz 與 Ansuz（1 恩索茲）具備完整深度講義內容
+     */
+    const RUNES_DATA = [
+      {
+        id: 'fehu',
+        order: 1,
+        deckNumber: 6,
+        glyph: 'ᚠ',
+        nameZh: '菲胡',
+        nameEn: 'Fehu',
+        letter: 'F',
+        pronunciation: 'FEH-who',
+        coreMeaning: '豐盛（Abundance）· 內在真實財富與天賦',
+        association: '木星（♃）與 射手座（♐）· 幸運、成功、樂觀、擴展與學習',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 6 篇',
+        isRichCore: true,
+        keywords: ['豐盛', '內在財富', '木星與射手', '天賦清點', '無形滿足'],
+        uprightHeading: '正位核心能量：豐盛、探索內在真實財富與天賦',
+        uprightBody:
+          '菲胡（Fehu，對應字母 F、發音 FEH-who、代表意義「豐盛」）與木星（♃）連結。木星召喚的是幸運、成功、樂觀、擴展和學習的能量，這個符文與最幸運的射手座（♐）有關。\n\n現代意義：通常我們會因為自己所擁有的東西、身邊的人或住的地方而感到安全。我們的幸福感來自於我們的財產和社會所定義的「富裕」。許多人強調外在的財富，而不是內在的富足感。然而，外在的財富（例如我們開的車、戴的珠寶或住的房子）可能是短暫的。今天擁有的東西，明天可能就沒了。我們可能「什麼都有了」，但內心仍感到不滿足。\n\n現在該是探索你的內在、重塑你對財富和財產的看法，以真正反映出你內在的真實財富的時候了。也許對別人來說，你是一個養育者、保護者、藝術家或行為榜樣。內在的你永遠不可能遺失或被拿走。向內看，並清點你與生俱來的那些天賦。留意你所有的天分。你的生命充滿了豐盛。隨著你對財富定義的改變，將焦點放在所有使你變得特別和獨特的事物上，你的生命就會變得更加滿足和喜悅。',
+        shadowHeading: '逆位／陰影提醒：只重外在財富、忽略內在天賦與不滿足',
+        shadowBody:
+          '當幸福感過度依賴車子、珠寶、房子等短暫的外在財富或社會定義的「富裕」時，即便看似「什麼都有了」，內心仍可能感到空虛不滿足；轉向內在清點天賦與無形價值，才能建立穩固的富足感。',
+        myth:
+          '結合古弗薩克流動財富意象與講義中的木星（♃）及射手座（♐）能量，象徵擴展、樂觀與內在天賦的豐盛。',
+        practiceTitle: '實作練習：清點內在天賦與重塑財富定義',
+        practiceBody:
+          '向內看並清點你與生俱來的天賦與特質（例如養育者、保護者、藝術家或行為榜樣），將焦點放在使你特別與獨特的事物上。',
+        practiceSteps: [
+          '重寫你對「財富」的定義，區分短暫的外在財產與永遠不會遺失的內在真實財富。',
+          '清點你與生俱來的天賦與天分，寫下哪些特質讓你感到特別與獨特。',
+          '每天留出時間滋養並運用這些天賦，感受生命中的滿足與喜悅。'
+        ],
+        reflectionQuestions: [
+          '對你而言，「財富」的意義是什麼？現在你覺得富有嗎？理由是什麼？',
+          '你有哪些天分？',
+          '哪一個天分使你感覺最為特別？'
+        ],
+        summary:
+          '菲胡的出現是在提醒我們，財富的衡量有許多種方式；無形的財富能使我們有一種滿足感，而這是累積再多財物也無法帶給我們的。沉思一下真正有價值的東西。'
+      },
+      {
+        id: 'uruz',
+        order: 2,
+        deckNumber: 19,
+        glyph: 'ᚢ',
+        nameZh: '烏魯茲',
+        nameEn: 'Uruz',
+        letter: 'U',
+        pronunciation: 'OO-rooze',
+        coreMeaning: '力量（Strength）· 自我養成的天賦與逆境成長',
+        association: '天王星（♅）與 水瓶座（♒）· 突變、創造力、獨立性與人道精神',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 19 篇',
+        isRichCore: true,
+        keywords: ['力量', '自我養成的天賦', '天王星與水瓶', '逆境成長', '擁抱自己與分享'],
+        uprightHeading: '正位核心能量：深厚力量、逆境成長與分享智慧',
+        uprightBody:
+          '烏魯茲（Uruz，對應字母 U、發音 OO-rooze、代表意義「力量」）與天王星（♅）有強大的連結。天王星會引發突然的改變、創造力、獨立性和反常行為，這個符文與最有意識和最具人道主義精神的水瓶座（♒）有關。\n\n現代意義：你的力量很深厚。你已經在生活中克服了許多挑戰，從而使你變得更為強大、穩定且更有能力。通常我們都是在遇到某種挑戰時，才有機會看見自己實際上是多麼的強大。\n\n這個符文邀請你回顧一下你的來時路，以及你人生中所有鍥而不捨的經驗。回頭看一下你已經走了多遠，然後將你學習到的智慧分享給此時感到害怕或脆弱的其他人。\n\n這世界需要你繼續建立你的力量、說出你的真相，並教導其他人做同樣的事。我們可以讓逆境擊垮我們，也可以利用逆境來使我們變得更強大。這一路上，你都選擇讓自己變得更為強大。現在你開始了解，力量是一種自我養成的天賦。\n\n今天，為你克服過的種種困難給自己一個擁抱吧！並將你的人生經驗分享給需要的人，好讓他們也能變得更強大。你擁有你所需要的一切力量，並將永遠堅持不懈。',
+        shadowHeading: '逆位／陰影提醒：被逆境擊垮、忘記自身力量或困在害怕脆弱中',
+        shadowBody:
+          '在只看見逆境的沉重而忘記自己已經克服了許多挑戰時，容易被困境擊垮或感到脆弱無力；回顧走過的路、為克服的困難給自己一個擁抱，並將智慧分享給需要的人，才能持續喚醒這份自我養成的力量。',
+        myth:
+          '結合原始耐力與講義中的天王星（♅）及水瓶座（♒）能量，象徵在挑戰與逆境中自我養成的深厚力量、獨立性與分享智慧。',
+        practiceTitle: '實作練習：回顧來時路擁抱自己，並分享力量與智慧',
+        practiceBody:
+          '回顧克服過的困難與鍥而不捨的經驗，給自己一個擁抱，並將所學智慧與人生經驗分享給感到害怕、脆弱或需要的人。',
+        practiceSteps: [
+          '寫下你對「力量」的定義，並回顧生活中克服的最大困難以及它教導你的事。',
+          '回頭看看自己已經走了多遠，為克服過的種種困難給自己一個擁抱，肯定力量是自我養成的天賦。',
+          '將你學習到的智慧與人生經驗分享給感到害怕、脆弱或需要的人，幫助他們也變得更強大。'
+        ],
+        reflectionQuestions: [
+          '你怎樣定義力量？',
+          '生活中，你克服過的最大困難是什麼？',
+          '那個經驗教導了你什麼？'
+        ],
+        summary:
+          '烏魯茲的出現是為了讓我們想起自己內在的力量和實力。透過試煉，我們的力量才能獲得測試和增強。召喚烏魯茲，你便能度過一切難關。'
+      },
+      {
+        id: 'thurisaz',
+        order: 3,
+        deckNumber: 21,
+        glyph: 'ᚦ',
+        nameZh: '蘇里薩茲',
+        nameEn: 'Thurisaz',
+        letter: 'TH',
+        pronunciation: 'THOOR-eh-saws',
+        coreMeaning: '門徑（Gateway）· 放下不再適合的事物、告別與新篇章',
+        association: '冥王星（♇）與 天蠍座（♏）· 力量、改變與重生',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 21 篇',
+        isRichCore: true,
+        keywords: ['門徑', '放下不再適合的', '冥王星與天蠍', '告別與空間', '脫胎換骨轉變'],
+        uprightHeading: '正位核心能量：門徑開啟、放下舊物與迎接新篇章',
+        uprightBody:
+          '蘇里薩茲（Thurisaz，對應字母 TH、發音 THOOR-eh-saws、代表意義「門徑」）與冥王星（♇）有強大的連結。冥王星與力量、改變和重生有關，在占星學上，它對應的是最愛恨分明又充滿肉慾的天蠍座（♏）。\n\n現代意義：一個新的開始即將發生，必要的改變也將隨之而來。在你能展開下一個人生篇章之前，請先放下生命中那些不再適合現在的你的事物。\n\n要誠實地面對你在新的人生篇章中想要什麼。告別負面的模式、舊有的創傷和自我限制的信念。隨著眼前這一章的結束，將它們都拋到腦後吧！這個放下的舉動為你的情感和靈性的擴展創造了空間。\n\n這也可能是你實現你與他人在靈魂層面的約定的時候。換句話說，某些陪伴你走到今天的人，可能不會再繼續陪你走下去了。這是個苦樂參半的事實。但某些告別是必要的。隨著你的擴展和成長，它們終究對你有好處。\n\n你是來人間生活、學習、愛，並成為最幸福的你。透過放下那些不再適合我們的事物，我們才能為新的開始挪出空間。',
+        shadowHeading: '逆位／陰影提醒：緊抓舊創傷不放、抗拒必要告別或自我設限',
+        shadowBody:
+          '在展開新篇章前若緊抓舊有創傷、負面模式、自我限制信念或不再適合的事物不放，會阻礙情感與靈性的擴展；誠實面對想要的、接納必要的告別並清理情緒儲藏室，才能為新開始挪出空間。',
+        myth:
+          '結合門徑與轉折意象與講義中的冥王星（♇）及天蠍座（♏）能量，象徵力量、改變與重生，在放下與告別中開啟新的人生篇章。',
+        practiceTitle: '實作練習：清理情緒儲藏室，放下不再適合的事物迎接轉變',
+        practiceBody:
+          '誠實面對新篇章中想要的什麼，放下不再適合的事物、舊有創傷與限制信念，並在轉變過程中尋找能提供穩定與支持的人談話。',
+        practiceSteps: [
+          '寫下渴望做出脫胎換骨改變的面向，以及必須放下的舊有創傷、負面模式或不再適合的事物。',
+          '接納必要的告別與空間清理，將不再有用的東西拋到腦後，為情感與靈性擴展挪出空間。',
+          '在個人轉變過程中，找出可以找誰談話來獲得穩定與支持，安心走向更快樂、更覺悟的人生。'
+        ],
+        reflectionQuestions: [
+          '你渴望在生活中的哪方面做出脫胎換骨的改變？',
+          '有哪些舊有的創傷是你緊抓著不放但必須放下的？',
+          '當個人的轉變發生時，在整個過程中，你可以找誰談話來獲得穩定和支持？'
+        ],
+        summary:
+          '蘇里薩茲的出現是要我們注意，將情緒的儲藏室清理乾淨，丟掉那些對我們不再有用的東西。現在該是繼續走向那在前方等待著你的更快樂、更覺悟的人生時候了。'
+      },
+      {
+        id: 'ansuz',
+        order: 4,
+        deckNumber: 1,
+        glyph: 'ᚨ',
+        nameZh: '恩索茲',
+        nameEn: 'Ansuz',
+        letter: 'A',
+        pronunciation: 'AWN-sooz',
+        coreMeaning: '信號（Signals）· 神聖智慧之境的訊息',
+        association: '月亮（☽）與 巨蟹座（♋）· 直覺、潛意識與養育衝動',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 1 篇',
+        isRichCore: true,
+        keywords: ['信號', '直覺管道', '高我衛星導航', '月亮與巨蟹', '神聖智慧'],
+        uprightHeading: '正位核心能量：信號、直覺管道與高我導航',
+        uprightBody:
+          '恩索茲（Ansuz，對應字母 A、發音 AWN-sooz、代表意義「信號」）與月亮（☽）及巨蟹座（♋）連結。月亮具有喚起直覺、潛意識心靈和養育衝動的力量，而巨蟹座與最感情用事的特質有關。\n\n現代意義：我們的直覺用許多方式跟我們說話——透過作夢、預感、閃過的念頭、靈思乍現，或甚至透過其他人。我們每天都被信號和徵兆包圍著，但如果我們沒覺察到周遭的種種面向，很容易就會錯過它們。這個符文邀請你連結自己的直覺管道，好讓你在人生中能更遊刃有餘，更加覺察那些看似突如其來的念頭、想法和靈感。這種使用自身的神聖指引系統的感覺，就像是衛星導航一樣——高我不斷地向我們傳送訊息，來為我們指出那條阻力最少的道路。你越是對這些傳送給你的直覺訊息保持開放，你就會收到更多的訊息。',
+        shadowHeading: '逆位／陰影提醒：忽略徵兆、過度情緒化或被雜訊干擾',
+        shadowBody:
+          '當注意力被日常雜訊淹沒，或因懷疑自己、被強烈情緒牽動而關閉直覺通道時，容易錯過高我傳來的信號與提示；保持對回答方式的開放，並相信得到的「第一個回答」，有助於聽見來自內在的訊息。',
+        myth:
+          '連結北歐神話中掌管智慧與神諭的眾神（Æsir）與神聖訊息，並在此講義中結合月亮（直覺、潛意識、養育衝動）與巨蟹座的感受力，象徵來自神聖智慧之境的指引信號。',
+        practiceTitle: '10 分鐘高我靜心練習',
+        practiceBody:
+          '今天找個安靜的地方獨處十分鐘。閉上眼睛，做三次深呼吸。練習向你的高我請求訊息，問：「今天我需要知道什麼？」或是：「我該如何解決這個歧見？」你可以問任何問題，而答案將會以某種形式出現。對問題的回答方式保持開放。要相信你得到的第一個回答就是正確答案，因為它來自最好的來源——你的內在。',
+        practiceSteps: [
+          '找個安靜的地方獨處十分鐘，閉上眼睛，做三次深呼吸。',
+          '向你的高我請求訊息，提問：「今天我需要知道什麼？」或「我該如何解決這個歧見？」',
+          '對答案出現的形式保持開放，並相信你得到的第一個回答（來自你的內在）。'
+        ],
+        reflectionQuestions: [
+          '你的腦海中，最新閃過的念頭是什麼？',
+          '閉上眼睛，問自己：「那代表什麼意思？」',
+          '你相信自己的直覺嗎？相信或不相信的原因是什麼？'
+        ],
+        summary:
+          '我們都具有本能的直覺能力。恩索茲的出現是在鼓勵我們注意身邊出現的信號和徵兆，並看出它們往往是來自神聖智慧之境的訊息。'
+      },
+      {
+        id: 'raidho',
+        order: 5,
+        deckNumber: 16,
+        glyph: 'ᚱ',
+        nameZh: '萊多',
+        nameEn: 'Raido',
+        letter: 'R',
+        pronunciation: 'RA-dough',
+        coreMeaning: '旅程（Journey）· 選擇光明路途、接納起伏與人生功課',
+        association: '水星（☿）與 雙子座（♊）· 旅行、溝通與思想',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 16 篇',
+        isRichCore: true,
+        keywords: ['旅程', '選擇光明路途', '水星與雙子', '接納起伏', '順勢而為'],
+        uprightHeading: '正位核心能量：人生旅程、選擇光明路途與順勢而為',
+        uprightBody:
+          '萊多（Raido，對應字母 R、發音 RA-dough、代表意義「旅程」）與水星（☿）有關。水星能促進旅行、溝通和思想，這個符文與具有雙重性格的雙子座（♊）有所連結。\n\n現代意義：每天早上醒來，我們可以朝旅程前進，也可以停留在原地。我們可以選擇生活、歡笑、愛和學習的光明路途，也可以選擇站在陰影的道路上一動也不動，只把焦點放在那些錯誤的事情上。當我們選擇光明的路途時，我們是成長和擴展的，而這正是每個人來到人間的目的；當我們選擇黯淡或黑暗的道路時，我們就否定了自己靈魂成長的能力。\n\n不管選擇的是哪一條路，我們每個人都走在自己獨特的旅程上。我們越是接納人生的起起伏伏，生命就越輕鬆地流動。旅程中，使我們掙扎不已的最困難階段，往往是我們學習和成長最多的。\n\n這個符文邀請你接納這一切，並看見隨著旅程的每一步而來的人生功課。',
+        shadowHeading: '逆位／陰影提醒：停留在陰影道路、只盯錯誤或嚴厲批判自己與他人',
+        shadowBody:
+          '若站在陰影道路上一動也不動、只把焦點放在錯誤的事情上，或過度嚴厲批判自己與他人的獨特旅程，會阻礙靈魂成長與生命流動；選擇光明路途、接納起伏與困難階段的人生功課並順勢而為，旅程就會更加輕鬆。',
+        myth:
+          '結合旅程軌跡與講義中的水星（☿）及雙子座（♊）能量，象徵旅行、溝通與思想，在人生起伏中看見每一步的人生功課。',
+        practiceTitle: '實作練習：選擇光明路途，接納起伏與人生功課',
+        practiceBody:
+          '在每天的選擇中朝光明路途前進，不嚴厲批判自己或他人，接納人生起起伏伏與困難階段帶來的學習與成長。',
+        practiceSteps: [
+          '覺察自己當下是選擇「生活、歡笑、愛和學習的光明路途」，還是停留在只盯著錯誤的陰影道路上。',
+          '回顧曾造成痛苦但事後發現學習許多的狀況，以及克服過的最大障礙，看見其中的人生功課。',
+          '接納人生起起伏伏與自己、他人的獨特旅程，順勢而為並相信黑暗時刻終將過去。'
+        ],
+        reflectionQuestions: [
+          '你認為自己是悲觀的人，還是樂觀的人？為什麼？',
+          '想想有什麼狀況曾經造成你的痛苦，但事後回顧卻發現學習到許多？',
+          '目前為止，你在生活中克服過哪些最大的障礙？'
+        ],
+        summary:
+          '我們都是來人間學習人生的功課。萊多的出現是在提醒我們，別太嚴厲地批判自己，也不要批判別人的獨特旅程的現況。我們越是能順勢而為，並且知道黑暗時刻終將過去，我們的旅程就會越輕鬆。'
+      },
+      {
+        id: 'kenaz',
+        order: 6,
+        deckNumber: 3,
+        glyph: 'ᚲ',
+        nameZh: '科諾',
+        nameEn: 'Kanu',
+        letter: 'C, K, Q',
+        pronunciation: 'KA-new',
+        coreMeaning: '敞開（Opening）· 新的門與可能性',
+        association: '海王星（♆）與 雙魚座（♓）· 理想主義、靈性、臣服與超越',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 3 篇',
+        isRichCore: true,
+        keywords: ['敞開', '新門開啟', '海王星與雙魚', '放下執著', '界限與尊重'],
+        uprightHeading: '正位核心能量：敞開、新門開啟與放下執著',
+        uprightBody:
+          '科諾（Kanu，對應字母 C、K、Q、發音 KA-new、代表意義「敞開」）汲取的是來自海王星（♆）的能量。海王星與理想主義、靈性、臣服和超越有關，這個符文與最有智慧又最充滿愛的雙魚座（♓）有強大的連結。\n\n現代意義：你的眼前即將打開一扇門，它將帶來新的可能性。但如果你不加以覺察和聆聽，你可能會錯過這個機會。當我們要走下一步時，我們往往會執著於自己所認為的事情必要的開展方式。然而我們這樣做時，卻可能無意中阻擋了那些實現我們想要的其他路徑。\n\n舉例來說，如果你對目前的某段關係感到不開心，那麼你可能會認為，除非完全結束這段關係，否則你不會感到快樂和滿足。然而，你潛在的需求可能是你想要別人尊重你。一旦了解這一點，你可能會發現，此時你應該說出來並建立你與他人的界限，而不是離開在不知情的狀況下跨越你的界限的那些人。\n\n要留意你生命中想改變的是什麼，並探索其中的原因。對宇宙給予你請求之物的方式保持開放，如此一來，你便有更多的機會得到你想要的東西。開放，留意，活在當下。一個新的開始以你從未想過的方式在等待著你。',
+        shadowHeading: '逆位／陰影提醒：執著單一路徑、忽略徵兆或未溝通界限',
+        shadowBody:
+          '當我們死守「事情只能照某種方式發生」的劇本時，容易擋住其他實現願望的路徑；若未釐清潛在需求與界限就直接切斷或逃避，也可能錯過真正能改善現況的轉機。',
+        myth:
+          '結合光明與洞見的符文意象與講義中的海王星（♆）及雙魚座（♓）能量，象徵靈性、臣服與超越，以意想不到的方式開啟新的開始。',
+        practiceTitle: '實作練習：探索想改變的事與開放接收',
+        practiceBody:
+          '留意你生命中想改變的是什麼，探索背後真正的原因與潛在需求，並對宇宙給予請求之物的方式保持開放。',
+        practiceSteps: [
+          '寫下一件你生命中想改變的事，並探索你希望改變的原因與潛在需求。',
+          '檢視自己是否執著於「只有單一方式才能達成」，並列出其他可能的路徑或界限溝通方式。',
+          '保持開放、留意當下徵兆，接納可能以意想不到形式出現的新開始。'
+        ],
+        reflectionQuestions: [
+          '當新的機會出現在你面前時，你的感覺怎樣？',
+          '你希望生活中的哪一件事情能夠改變？',
+          '那個改變可能以哪三種可能的形式出現？'
+        ],
+        summary:
+          '科諾的出現是在鼓勵我們，讓自己的心對某個意外的邀請或事先沒想到的事物保持開放。當我們是友善的並對新的可能性開放，有時就會出現神奇的事。'
+      },
+      {
+        id: 'gebo',
+        order: 7,
+        deckNumber: 7,
+        glyph: 'ᚷ',
+        nameZh: '蓋伯',
+        nameEn: 'Gebo',
+        letter: 'G',
+        pronunciation: 'GEH-boe',
+        coreMeaning: '夥伴（Partnership）· 新的結合、合作與互助',
+        association: '金星（♀）、天秤座（♎）與 金牛座（♉）· 浪漫、愛情、美麗、平衡與穩定',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 7 篇',
+        isRichCore: true,
+        keywords: ['夥伴', '新的結合', '金星天秤金牛', '放下孤軍奮戰', '開放接納'],
+        uprightHeading: '正位核心能量：夥伴關係、新的結合與開放合作',
+        uprightBody:
+          '蓋伯（Gebo，對應字母 G、發音 GEH-boe、代表意義「夥伴」）與金星（♀）有關。金星以其陰性能量、喚起浪漫、愛情和美麗而為人所知，這個符文與最平衡的天秤座（♎）和最穩定的金牛座（♉）有所連結。\n\n現代意義：一個新的結合即將發生在你身上。這個結合需要你的合作，才能實現你在人生的這個階段所追求的喜悅。儘管你可以靠自己完成你諸多的渴望，但現在該是讓那位被你打造的心牆禁錮住的某個人表現的時候了。剛開始這可能令人感覺不舒服，但這並無大礙。在你人生旅程的這個階段，你沒必要孤軍奮鬥。這個結合的對象可能是一位新的好友、新的事業夥伴或情人，而不論是哪一種情況，都要對它保持開放。\n\n這個結合會有其自己的能量，完全不同於你過往的任何關係。不要將它與過去的經驗進行比較或評斷。隨著你的成長，你會變得越來越擴張。關係再也無法定義你是誰，相反的，它們只是來改善你的人生。\n\n讓你的光明由內而外地大放異彩。注意你吸引了哪些人進入你的生命，並讓新的關係建立起來。你已經為此做好準備了。',
+        shadowHeading: '逆位／陰影提醒：心牆封閉、執著孤軍奮戰或套用舊關係比較',
+        shadowBody:
+          '若因過去經驗築起心牆、堅持「一切都必須靠自己完成」，或把新關係拿來與過去比較評斷，會阻礙新的結合與合作；適度敞開、放下不舒服的慣性，才能迎接改善人生的夥伴能量。',
+        myth:
+          '連結金星（♀）的浪漫、愛情與美麗，以及天秤座（♎）的平衡與金牛座（♉）的穩定，象徵合作與新的結合。',
+        practiceTitle: '實作練習：鬆開一點心牆，對新的合作保持開放',
+        practiceBody:
+          '留意你吸引了哪些人進入生命，不急著與過去比較或評斷，在必要時願意求助並接受他人的援手。',
+        practiceSteps: [
+          '覺察自己是否在哪些事情上硬要「孤軍奮戰」，其實可以尋求合作或接受援手。',
+          '觀察近期吸引到身邊的新朋友、事業夥伴或情感對象，練習以全新眼光看待而不套用舊經驗比較。',
+          '讓內在的光明自然展現，對建立新的合作與關係保持開放。'
+        ],
+        reflectionQuestions: [
+          '對你來說，夥伴關係的意義是什麼？',
+          '你與某人的夥伴關係能以何種方式改善你的生活？',
+          '想到你與某人合夥或共同協力完成某個目標時，讓你有什麼樣的感覺？'
+        ],
+        summary:
+          '蓋伯邀請我們放下「一切事情都必須靠自己完成」的限制性信念。在必要時求助並接受別人的援手是沒問題的。'
+      },
+      {
+        id: 'wunjo',
+        order: 8,
+        deckNumber: 20,
+        glyph: 'ᚹ',
+        nameZh: '溫究',
+        nameEn: 'Wunjo',
+        letter: 'V, W',
+        pronunciation: 'WOO-yo',
+        coreMeaning: '喜悅（Joy）· 存在的自然狀態與有意識的選擇',
+        association: '太陽（☉）與 獅子座（♌）· 生命力、獨立性與忠誠',
+        aettKey: 'freyr',
+        stageLabel: '第一組 · 弗雷之組（1–8）· 講義第 20 篇',
+        isRichCore: true,
+        keywords: ['喜悅', '存在的自然狀態', '太陽與獅子', '喜悅是一種選擇', '內在小孩玩耍'],
+        uprightHeading: '正位核心能量：喜悅、當下的深沉滿足與選擇快樂',
+        uprightBody:
+          '溫究（Wunjo，對應字母 V、W、發音 WOO-yo、代表意義「喜悅」）與太陽（☉）連結。太陽主掌生命力和獨立性，這個符文與最忠誠的獅子座（♌）有關。\n\n現代意義：我們每天都擁有體驗喜悅的能力。喜悅是存在的自然狀態，在這種狀態中，我們感受到全然的喜樂。體驗喜悅時，我們會感到深沉的滿足。我們完全處於當下，沒有過去的懊悔或未來的擔憂。我們對當下的一切感到自在。\n\n然而，我們許多人有各種阻止我們去感受喜悅的心理障礙。我們可能因為養兒育女、財務負擔、職場或校園的衝突，或人際關係不和諧的壓力而感覺陷入泥淖。我們可能會認為我們不可能在感覺壓力或感覺喜悅之間做選擇；但我們確實具有這種能力。\n\n舉例來說，塞車的時候，你可以選擇沮喪氣餒，也可以選擇打開收音機享受這意料之外的時光，靜靜地坐著欣賞一些音樂。\n\n從今天開始，將喜悅視為一種選擇。你不必等待喜悅的發生；你可以隨自己的意願，在任何時候體驗到喜悅。今天遇到困難的時候，閉上眼睛問自己：「此時的喜悅在哪裡？」工作遇到壓力時，你手上的熱咖啡可以成為喜悅的一刻嗎？走出戶外感受臉上的陽光能帶給你快樂的一刻嗎？\n\n去覺察咖啡或陽光帶給你的快樂。擁抱這個感受，並邀請你內在的喜悅。喜悅其實是一種選擇。',
+        shadowHeading: '逆位／陰影提醒：心理障礙阻礙喜悅、被壓力困住或把事情看得太嚴肅',
+        shadowBody:
+          '在養兒育女、財務、職場、校園或人際壓力下感到陷入泥淖時，若以為無法選擇喜悅或把事情看得太嚴肅，容易錯過當下的快樂；隨自己的意願選擇喜悅、覺察手邊熱咖啡或臉上陽光等微小快樂，並讓內在小孩笑出來與玩起來，就能重新連結喜悅。',
+        myth:
+          '結合喜悅和諧與講義中的太陽（☉）及獅子座（♌）能量，象徵生命力、獨立性與忠誠，在當下活出自在與喜樂。',
+        practiceTitle: '實作練習：在日常與困難中選擇喜悅，喚醒內在小孩',
+        practiceBody:
+          '不必等待喜悅發生，隨自己的意願在任何時候體驗喜悅；遇到困難或壓力時問自己「此時的喜悅在哪裡」，覺察微小的快樂並讓內在小孩笑出來、唱出來和玩起來。',
+        practiceSteps: [
+          '寫出三件帶給你喜悅的事物，並覺察感覺喜悅時是在身體的哪一部位感受到它。',
+          '遇到困難或工作壓力時，閉上眼睛問自己「此時的喜悅在哪裡？」，留意手上的熱咖啡或臉上的陽光等微小快樂並擁抱它。',
+          '別把事情看得太嚴肅，在各種狀況中找到笑點，對著鏡子微笑，讓內在小孩笑出來、唱出來和玩起來，並將更多喜悅時光帶進日常生活。'
+        ],
+        reflectionQuestions: [
+          '說出三件帶給你喜悅的事物。',
+          '感覺喜悅時，你是是在身體的哪一部位感受到它？',
+          '你要如何將更多這種喜悅的時光帶進你的日常生活？'
+        ],
+        summary:
+          '溫究的出現是在鼓勵我們，別把事情看得太嚴肅。在所有的狀況中找到笑點。看著鏡子，對美麗的你微笑。當個傻瓜！讓你的內在小孩笑出來、唱出來和玩起來。'
+      },
+      {
+        id: 'hagalaz',
+        order: 9,
+        deckNumber: 8,
+        glyph: 'ᚺ',
+        nameZh: '哈格拉茲',
+        nameEn: 'Hagalaz',
+        letter: 'H',
+        pronunciation: 'HA-ga-las',
+        coreMeaning: '擾亂（Disruption）· 突如其來的改變與新章開啟',
+        association: '天王星（♅）與 水瓶座（♒）· 突變、創造力、獨立性與人道精神',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 8 篇',
+        isRichCore: true,
+        keywords: ['擾亂', '突發改變', '天王星與水瓶', '一章結束新章開始', '信任結果'],
+        uprightHeading: '正位核心能量：擾亂、不可避免的改變與新篇章',
+        uprightBody:
+          '哈格拉茲（Hagalaz，對應字母 H、發音 HA-ga-las、代表意義「擾亂」）與天王星（♅）有強大的連結。天王星會引發突然的改變、創造力、獨立性和反常行為，這個符文與最有意識和最具人道主義精神的水瓶座（♒）有關。\n\n現代意義：當我們錯過了「現在該是人生做出某種改變的時候」的微妙暗示時，宇宙有時會替我們創造這種改變，好讓我們能進入下一階段的學習。你的道路出現了擾亂，但不必害怕。這即將發生的改變，是出自於你想要有一個更好的人生潛意識渴望，即使你尚未構思你所想要的內容或方式。你可能會因為擔心它出現的方式而壓抑這個渴望。放下這個擔憂吧！一章的結束標示著新一章的開始，隨之而來的是光明、希望和無限的可能性。\n\n你以某種方式被愛著、支持著，只是這些方式超出了你的所見、所觸和所知。要相信，當這擾亂的浪潮出現時，它是為了你的最高和最大的利益而來。結果是，你會感到更加快樂和完整。改變是不可避免的，要用開放的心來接納它，並知道改變的結果將會是美好的。',
+        shadowHeading: '逆位／陰影提醒：害怕擾亂、壓抑渴望或抗拒改變',
+        shadowBody:
+          '當道路出現擾亂時，若因為害怕改變出現的方式而壓抑內在渴望，或抗拒不可避免的轉變，只會增添緊繃；放下擔憂、以開放心態接納，才能迎向新一章的光明與希望。',
+        myth:
+          '結合自然擾亂與講義中的天王星（♅）及水瓶座（♒）能量，象徵突發轉變與創造力，推動我們邁向下一階段的學習與更好的人生。',
+        practiceTitle: '實作練習：在擾亂中穩住自己並接納新章',
+        practiceBody:
+          '當遇到突如其來的變化或困境時，放下對改變方式的過度擔憂，找出讓自己在變動中穩下來的方法。',
+        practiceSteps: [
+          '寫下目前遇到的擾亂或人生挑戰，以及這段經歷帶給你的學習與啟發。',
+          '列出遇到困境時能讓自己在突然變化中穩定下來的三件事。',
+          '放下對未來的恐懼，以開放的心接納新一章的開始。'
+        ],
+        reflectionQuestions: [
+          '目前為止，你人生中遭遇的最大挑戰是什麼？',
+          '這個經歷教導了你什麼？',
+          '遇到困境時，你能做哪三件事來讓自己在突然的變化中穩定下來？'
+        ],
+        summary:
+          '哈格拉茲鼓勵我們要對尚無法看見的未來有信心，並且要相信，那個在這神祕改變的另一邊等待著我們的結果，對於涉入其中的每一方都將會是最好的。'
+      },
+      {
+        id: 'nauthiz',
+        order: 10,
+        deckNumber: 13,
+        glyph: 'ᚾ',
+        nameZh: '納奧帝斯',
+        nameEn: 'Naudiz',
+        letter: 'N',
+        pronunciation: 'NOW-deez',
+        coreMeaning: '約束（Constraint）· 在激動回應前暫停思考與慈愛用詞',
+        association: '土星（♄）與 魔羯座（♑）· 克制、時間、功課、責任與沉穩堅持',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 13 篇',
+        isRichCore: true,
+        keywords: ['約束', '暫停思考再回應', '土星與魔羯', '語言力量', '慈愛與優雅'],
+        uprightHeading: '正位核心能量：約束、在激動回應前暫停並慈愛用詞',
+        uprightBody:
+          '納奧帝斯（Naudiz，對應字母 N、發音 NOW-deez、代表意義「約束」）與土星（♄）有強大的連結。土星與克制、時間、功課和責任有關，與這個符文相關的星座是最沉穩又最堅持不懈的魔羯座（♑）。\n\n現代意義：有時候在敏感或意外的狀況下，我們的反應和言語會做出違心之論，而沒考慮到我們說出的這些話會對他人造成什麼樣的重大影響。我們可能會在理性的場合裡過於感性，或在感性的場合裡過於理性。言語是有力量的，認識這一點非常重要。這個符文邀請我們在激動時做出回應之前，有必要先停下來想一想我們所想要的結果。\n\n當你面臨涉及他人的艱困狀況時，你可以考慮使用一句讓自己暫停下來的話語，例如：「我需要一些時間好好想一想。」這麼做能讓你脫離那個狀況，並深呼吸思考一下你接下來期望出現什麼樣的結果，然後你就可以根據這個期望做出你的回應。在採取行動之前，只要你能讓自己有一段靜止和釐清的時間，你就有能力喚起和諧，而不是紛爭。',
+        shadowHeading: '逆位／陰影提醒：匆忙反應、違心之論或說出傷人適得其反的話',
+        shadowBody:
+          '在敏感、意外或不假思索的狀態下匆忙做出反應，容易說出違心之論、傷人或適得其反的話語，甚至在事後感到後悔；先暫停脫離狀況、深呼吸並考慮對方處境，才能以慈愛與優雅喚起和諧。',
+        myth:
+          '結合克制約束與講義中的土星（♄）及魔羯座（♑）能量，象徵克制、責任與沉穩堅持，在言語與行動中守住清醒與和諧。',
+        practiceTitle: '實作練習：設定暫停話語，深呼吸後再回應',
+        practiceBody:
+          '在激動或面臨涉及他人的艱困狀況時，先用一句話讓自己暫停並脫離狀況，深呼吸釐清期望結果後再回應。',
+        practiceSteps: [
+          '準備一句讓自己在做出反應前暫停並脫離狀況的話語（例如：「我需要一些時間好好想一想。」）。',
+          '回想曾因匆忙反應而事後感到後悔的所言或所行，思考若換成現在會如何處理。',
+          '在說話或行動前先設身處地考慮對方處境，以慈愛與優雅選擇用詞，喚起和諧而非紛爭。'
+        ],
+        reflectionQuestions: [
+          '有沒有一個例子是你匆忙地做出反應，導致你在事後對自己的所言或所行感到後悔？如果換成現在，你會怎麼做？',
+          '什麼狀況或什麼人會讓你不假思索地做出反應，而不是做出深思熟慮的回應？',
+          '在你做出反應之前，你會用什麼話語來讓你暫停下來脫離那個狀況？'
+        ],
+        summary:
+          '納奧帝斯的出現，是在要求我們暫停下來設身處地為他人想一想。在說出傷人或適得其反的話之前，先考慮對方的處境。今天，懷著慈愛與優雅來選擇你說話的用語。'
+      },
+      {
+        id: 'isa',
+        order: 11,
+        deckNumber: 9,
+        glyph: 'ᛁ',
+        nameZh: '伊莎斯',
+        nameEn: 'Isaz',
+        letter: 'I',
+        pronunciation: 'EE-saw',
+        coreMeaning: '靜止（Stillness）· 暫停、休息與神聖秩序',
+        association: '土星（♄）與 魔羯座（♑）· 克制、時間、功課、責任與沉穩堅持',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 9 篇',
+        isRichCore: true,
+        keywords: ['靜止', '拔掉插頭休息', '土星與魔羯', '接納暫停', '神聖秩序'],
+        uprightHeading: '正位核心能量：靜止、接納暫停與靈魂充電',
+        uprightBody:
+          '伊莎斯（Isaz，對應字母 I、發音 EE-saw、代表意義「靜止」）與土星（♄）有強大的連結。土星與克制、時間、功課和責任有關，與這個符文相關的星座是最沉穩又最堅持不懈的魔羯座（♑）。\n\n現代意義：此刻需要靜止。放下你因為停下腳步而產生的所有不耐煩或沮喪的感受。人總是傾向於一直往前衝衝衝，但有時我們真正需要的是拔掉插頭，然後靜止下來。靈魂的充電和恢復精神，也需要配合肉體和情感上的休息。\n\n當生活中的某個事物突然或意外中止時，我們可能會很難相信宇宙和自己。在這種情況下，我們很容易就陷入受害者的心態。我們可能會說：「為什麼我會發生這種事？我到底做了什麼事而遭到這種報應？」然而，隨著時間的推移，我們可能會了解到，原來這個中止是為了獲得最好的結果。\n\n重要的是我們要提醒自己，無論哪個時刻，我們總是沒有完整的信息或智慧來解釋某個事物會中止的原因。重點是要相信這個中止是我們所需要的，因此它一定是為了讓我們擁有更美好的明天。接納這個暫停，並好好休息吧！',
+        shadowHeading: '逆位／陰影提醒：停不下來的衝刺、不耐煩或受害者心態',
+        shadowBody:
+          '在該靜止時仍硬要往前衝、對停下腳步感到不耐煩，或在事物突然中止時陷入「為什麼是我／遭到報應」的受害者心態，會阻礙肉體、情感與靈魂的修復；接納暫停並好好休息，才能迎來更美好的明天。',
+        myth:
+          '結合靜止凝結與講義中的土星（♄）及魔羯座（♑）能量，象徵時間、功課、克制與沉穩的恢復力量。',
+        practiceTitle: '實作練習：拔掉插頭，邀請靜止與休息進入生活',
+        practiceBody:
+          '放下停下腳步的不耐煩與沮喪，檢視哪些由你掌控的障礙正在阻擋靜止，並給自己一段真正的休息與充電。',
+        practiceSteps: [
+          '大聲說出「靜止」這個詞，覺察腦海中浮現的第一個詞語或意象。',
+          '找出生活中由你掌控、卻阻擋你邀請更多靜止的最大障礙，並為自己留出一段「拔掉插頭」的休息時間。',
+          '在事物突然中止或感到四處碰壁時，提醒自己一切仍在神聖秩序中，接納暫停與隨之而來的復甦。'
+        ],
+        reflectionQuestions: [
+          '當你大聲說出「靜止」這個詞時，你看見的第一個詞語或意象是什麼？',
+          '你對靜止的聯想是正面的，還是負面的？為什麼？',
+          '生活中那些可以由你掌控的障礙，其中哪一個是阻擋你邀請更多靜止進入你的生活的最大障礙？'
+        ],
+        summary:
+          '伊莎斯的出現是在提醒我們，一切事物永遠處於神聖的秩序中，即使我們感覺四處碰壁時也是一樣。今天讓自己處於寧靜當中，並享受必要的休息和它所帶來的復甦。'
+      },
+      {
+        id: 'jera',
+        order: 12,
+        deckNumber: 10,
+        glyph: 'ᛃ',
+        nameZh: '耶拉',
+        nameEn: 'Jera',
+        letter: 'J',
+        pronunciation: 'YAR-ah',
+        coreMeaning: '收穫（Harvest）· 感恩所擁有的一切與美好豐盛',
+        association: '金星（♀）、天秤座（♎）與 金牛座（♉）· 浪漫、愛情、美麗、平衡與穩定',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 10 篇',
+        isRichCore: true,
+        keywords: ['收穫', '感恩與分享', '金星天秤金牛', '享受辛勞成果', '放下尚未擁有渴望'],
+        uprightHeading: '正位核心能量：收穫、感恩豐盛與享受辛勞成果',
+        uprightBody:
+          '耶拉（Jera，對應字母 J、發音 YAR-ah、代表意義「收穫」）與金星（♀）有關。金星以其陰性能量、喚起浪漫、愛情和美麗而為人所知，這個符文與最平衡的天秤座（♎）和最穩定的金牛座（♉）有所連結。\n\n現代意義：收穫是關於我們擁有什麼，以及身為人類和靈性生命的我們所擁有的無限潛力的一種理解。收穫將我們與生活中的美好和豐盛連結起來——我們的環境、我們的家和我們的人際關係。收穫提醒我們仔細思考自己所擁有的一切，並且每天找出時間進行反思。它同時也讓我們開始看見什麼是可能的，並了解我們可以過得更豐盛。\n\n感恩是接收更多事物的鑰匙——更多的愛、更多正面的體驗、更多的喜悅。如果我們能花時間感謝我們所擁有的、分享我們所擁有的，並且每天找出幾個理由來表達感恩，如此就沒有不可能的事。\n\n享受你的辛勞和努力工作的成果。你值得擁有你目前所有的一切，而隨著你繼續感恩這個豐盛，就會有更多的豐盛到來。',
+        shadowHeading: '逆位／陰影提醒：視豐盛為理所當然、執著尚未擁有或忽略感恩',
+        shadowBody:
+          '把生活中的美好與豐盛視為理所當然，或過度執著於想要獲得卻尚未擁有的渴望，會讓人忽略早已在身邊的收穫；透過每天反思與感恩，才能開啟接收更多愛、喜悅與豐盛的鑰匙。',
+        myth:
+          '結合自然收成與講義中的金星（♀）、天秤座（♎）及金牛座（♉）能量，象徵平衡、穩定與珍惜既有成果的豐盛。',
+        practiceTitle: '實作練習：每天感恩、分享所擁有並享受成果',
+        practiceBody:
+          '仔細思考自己所擁有的一切，每天找出幾個理由表達感恩並分享所擁有的，同時安心享受辛勞與努力的成果。',
+        practiceSteps: [
+          '每天說出或寫下三件你感恩的事物，並留意生活中可能被視為理所當然的豐盛。',
+          '分享你所擁有的美好與善意，檢視是否有非常想要卻未必必要的渴望可以放下。',
+          '肯定自己值得擁有目前的一切，安心享受辛勞努力的成果，讓更多豐盛自然到來。'
+        ],
+        reflectionQuestions: [
+          '說出你感恩的三件事物。',
+          '你生活中有哪一種豐盛是你可能視為理所當然的？',
+          '有什麼事物是你非常想要，但也許是不必要的？'
+        ],
+        summary:
+          '耶拉的出現是在邀請我們停下來反思我們所擁有的一切，並放下所有我們想要獲得而尚未擁有之物的渴望。辛苦的努力已經完成，好好享受那早已在你身邊的豐盛吧！'
+      },
+      {
+        id: 'eihwaz',
+        order: 13,
+        deckNumber: 22,
+        glyph: 'ᛇ',
+        nameZh: '愛瓦茲',
+        nameEn: 'Eihwaz',
+        letter: 'Y',
+        pronunciation: 'EYE-wawz',
+        coreMeaning: '臣服（Surrender）· 耐心等待自然呈現與明朗後再行動',
+        association: '海王星（♆）與 雙魚座（♓）· 理想主義、靈性、臣服與超越',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 22 篇',
+        isRichCore: true,
+        keywords: ['臣服', '耐心與自然呈現', '海王星與雙魚', '抑制倉促干涉', '細節明朗後行動'],
+        uprightHeading: '正位核心能量：臣服、耐心等待與在細節明朗後行動',
+        uprightBody:
+          '愛瓦茲（Eihwaz，對應字母 Y、發音 EYE-wawz、代表意義「臣服」）汲取的是來自海王星（♆）的能量。海王星與理想主義、靈性、臣服和超越有關，這個符文與最有智慧又最充滿愛的雙魚座（♓）有強大的連結。\n\n現代意義：此時堅持、耐性和鍥而不捨是很重要的。要知道，所有的事物都需要時間；生活中最重要的東西是急不得的。雖然你往往必須看見進展，才會相信「事情正在發生」；但是你要信任現在是讓事情自然呈現的時候，而不必施予任何形式的壓力。\n\n要抑制自己干涉或阻止某事發生的衝動。有時最好的行動就是沒有行動。你今天採取的決定或行動，事後當你看得很更多、知道得更多時，看起來將會非常不一樣。此時有太多移動的組件，它們共同形成一個對你有最大利益的計畫。\n\n現在暫停一下，不要做出突如其來的舉動。在行動之前，先暫停、等待，讓更多的事物自然呈現。你會知道何時才是行動的時機。',
+        shadowHeading: '逆位／陰影提醒：倉促行動、強加壓力或急著干涉阻止',
+        shadowBody:
+          '在事情尚未明朗或移動組件仍在成形時倉促行動、施予壓力或急著干涉阻止，容易讓決定在事後看起來完全不同；先暫停、等待並給事物適當時間呈現，等細節明朗後再行動，才能契合最大利益的計畫。',
+        myth:
+          '結合深層耐力與講義中的海王星（♆）及雙魚座（♓）能量，象徵靈性、臣服與超越，在耐心等待與信任中迎向恰當時機。',
+        practiceTitle: '實作練習：先暫停等待，等更多細節明朗後再採取行動',
+        practiceBody:
+          '抑制倉促採取行動或干涉阻止的衝動，給事物適當的時間自然呈現，在看清更多細節、知道何時才是時機後再做決定。',
+        practiceSteps: [
+          '覺察現在生活中哪些事情使你想要（也許是倉促地）採取行動，以及等待行動可能面臨的顧慮。',
+          '練習區分「當下反應」與「給事情適當時間呈現之後再做出回應」之間的差別。',
+          '在說或做任何事之前先看清整個狀況、給它時間，堅持到底並在更多細節明朗化之後才採取行動。'
+        ],
+        reflectionQuestions: [
+          '現在生活中有什麼事情使你想要（也許是倉促地）採取行動？',
+          '等待行動有什麼不利的因素？為什麼？',
+          '你能區分當下反應，以及給事情適當的時間呈現之後再做出回應之間的差別嗎？'
+        ],
+        summary:
+          '愛瓦茲提醒我們，現在要堅持到底。但在你說或做任何事之前，先看清楚整個狀況。給它時間，並只有在更多的細節明朗化之後才採取行動。'
+      },
+      {
+        id: 'perthro',
+        order: 14,
+        deckNumber: 15,
+        glyph: 'ᛈ',
+        nameZh: '佩索',
+        nameEn: 'Perth',
+        letter: 'P',
+        pronunciation: 'pearth',
+        coreMeaning: '起始（Beginning）· 採取主動果敢行動與縱身一躍',
+        association: '火星（♂）與 牡羊座（♈）· 幹勁、侵略與陽性能量',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 15 篇',
+        isRichCore: true,
+        keywords: ['起始', '採取主動行動', '火星與牡羊', '放下自我懷疑', '縱身一躍'],
+        uprightHeading: '正位核心能量：起始、主動果敢行動與縱身一躍',
+        uprightBody:
+          '佩索（Perth，對應字母 P、發音 pearth、代表意義「起始」）與火星（♂）有強大的連結。火星喚起幹勁、侵略和陽性的能量，這個符文對應的是最主動又最安靜不下來的牡羊座（♈）。\n\n現代意義：現在是朝向你一直打算做出的改變邁出第一步的時候了。被動地等待某個事物來推動你前進，並無法產生你所尋求的改變。你必須採取主動和果敢的態度，才能讓宇宙將你想要的事物帶給你。你不必有完全成熟的計畫，或知道它實際上會如何呈現。你不必知道所有的細節，但你確實必須做點什麼。即使是最小的一步，也將引發改變。\n\n如果你因自我懷疑或恐懼而不敢邁出步伐，那麼現在該是你放下它們的時候了。若是財力的侷限耽誤了你，那麼就要知道，獲得你想要的東西不是只有一種方法而已；若你擔心的是你想要的改變可能會傷害到其他人，那麼我們鼓勵你在人生的這個關頭想想你自己。改變並沒有所謂「正確的時間」或「錯誤的時間」。萬事萬物都按照神的安排，在它們該出現的時刻出現。\n\n別再想了，現在是採取行動的時候了。你是受支持和被愛的。確定你已經準備好，然後縱身一躍吧！',
+        shadowHeading: '逆位／陰影提醒：被動等待、自我懷疑恐懼或過度空想不行動',
+        shadowBody:
+          '被動等待外力推動，或因自我懷疑、恐懼、財力侷限或擔心他人而遲遲不敢踏出第一步，會讓改變停留在原地；不需要等計畫完全成熟或知道所有細節，放下顧慮、踏出哪怕最小的一步，就能引發改變。',
+        myth:
+          '結合起始契機與講義中的火星（♂）及牡羊座（♈）能量，象徵幹勁、陽性能量與主動果敢的開創精神。',
+        practiceTitle: '實作練習：搞清楚想改變的事，踏出勇敢的第一步並縱身一躍',
+        practiceBody:
+          '釐清心中與頭腦想要的改變，放下自我懷疑與恐懼，不必等細節齊全，現在就踏出哪怕最小的一步展開行動。',
+        practiceSteps: [
+          '搞清楚心與頭腦想要的改變，寫下你知道現在就想改變的事，以及你能掌控的部分。',
+          '檢視是否有自我懷疑、恐懼或財力侷限在阻礙你，提醒自己獲得想要的東西不只一種方法，並放下顧慮。',
+          '今天踏出哪怕最小的一步來展開這個改變，確定準備好後就勇敢縱身一躍，相信宇宙會處理好其他的事。'
+        ],
+        reflectionQuestions: [
+          '哪些事情是你就知道你現在就想改變的？',
+          '在你能掌控的事情中，有什麼是你想改變的？',
+          '今天你可以踏出哪一步來展開這個改變？'
+        ],
+        summary:
+          '佩索的出現是在推我們一把，讓我們採取決斷的行動。首先，我們的心和頭腦必須搞清楚我們所想要的改變。然後，我們必須踏出勇敢的第一步。縱身一躍吧！相信宇宙會處理好其他的事。'
+      },
+      {
+        id: 'algiz',
+        order: 15,
+        deckNumber: 23,
+        glyph: 'ᛉ',
+        nameZh: '奧吉茲',
+        nameEn: 'Algiz',
+        letter: 'Z',
+        pronunciation: 'ALL-heez',
+        coreMeaning: '保護（Protection）· 放下憂慮、個人咒語與安全受護',
+        association: '火星（♂）與 牡羊座（♈）· 幹勁、侵略與陽性能量',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 23 篇',
+        isRichCore: true,
+        keywords: ['保護', '放下憂慮', '火星與牡羊', '個人咒語', '安全受護'],
+        uprightHeading: '正位核心能量：保護、放下憂慮與安全受護的信念',
+        uprightBody:
+          '奧吉茲（Algiz，對應字母 Z、發音 ALL-heez、代表意義「保護」）與火星（♂）有強大的連結。火星喚起幹勁、侵略和陽性的能量，這個符文對應的是最主動又最安靜不下來的牡羊座（♈）。\n\n現代意義：你最大的利益已經在物質界和靈界得到關切和考量。現在該是你放下生活中關於這方面的憂慮的時候了。你並不是孤軍奮戰，即使有時候你可能感覺如此。現在是清點你所有的祝福的理想時刻，並且了解到，有多少次你擔憂著可能出現的負面結果，但它們一次也沒發生。\n\n今天創造一句個人的咒語，例如：「事物永遠為我運行」或「沒什麼好怕的，永遠有人支持我」。這一整天都重複這個咒語。當你大聲說出你的咒語時，要感覺自己的脆弱感逐漸消失了。\n\n你擁有一切必要的保護，不必憂慮自己的幸福安康。',
+        shadowHeading: '逆位／陰影提醒：過度憂慮假設負面結果、心靈製造恐懼或感到孤軍奮戰',
+        shadowBody:
+          '未經鍛鍊的心靈容易製造許多恐懼與負面擔憂，而許多擔心的事其實並不會發生；清點祝福、在極度憂慮時尋求支持並重複個人咒語，能幫助釋放脆弱感並安住於受保護的狀態。',
+        myth:
+          '結合守護防護與講義中的火星（♂）及牡羊座（♈）能量，象徵幹勁、陽性能量與在物質界與靈界皆受關切保護的安定力量。',
+        practiceTitle: '實作練習：創造並整天重複個人咒語，清點祝福與尋求支持',
+        practiceBody:
+          '創造一句個人的咒語並整天重複、大聲說出以感受脆弱感消退；同時清點祝福，並在感到危險、不安或極度憂慮時找人支持。',
+        practiceSteps: [
+          '覺察在什麼狀況下會感到危險、不安或憂慮，以及憂慮的程度與在極度憂慮時可找哪些人支持。',
+          '清點你所有的祝福，並回想有多少次擔憂的負面結果其實一次也沒發生。',
+          '今天創造一句個人咒語（例如：「事物永遠為我運行」或「沒什麼好怕的，永遠有人支持我」），整天重複並在心裡感覺脆弱感逐漸消失。'
+        ],
+        reflectionQuestions: [
+          '你在什麼狀況下會感到危險、不安或憂慮？',
+          '就這件事來說，你會憂慮到什麼程度？',
+          '在極度憂慮的時候，生活中你可以找哪些人來支持你？'
+        ],
+        summary:
+          '我們最擔心會發生的事，其實很多都不會發生。奧吉茲提醒我們，我們那未經鍛鍊的心靈製造了多少的恐懼。你是安全的；你是受保護的。要相信，事情的運作永遠都會為你帶來好的結果。'
+      },
+      {
+        id: 'sowilo',
+        order: 16,
+        deckNumber: 17,
+        glyph: 'ᛊ',
+        nameZh: '索維羅',
+        nameEn: 'Sowilo',
+        letter: 'S',
+        pronunciation: 'SO-will-oh',
+        coreMeaning: '完整（Wholeness）· 與靈性保持一致、靜心休息與內在平靜',
+        association: '太陽（☉）與 獅子座（♌）· 生命力、獨立性與忠誠',
+        aettKey: 'heimdall',
+        stageLabel: '第二組 · 海姆達爾／自然組（9–16）· 講義第 17 篇',
+        isRichCore: true,
+        keywords: ['完整', '與靈性一致', '太陽與獅子', '靜心休息重置', '早起寧靜時刻'],
+        uprightHeading: '正位核心能量：完整、與靈性保持一致與日常平靜',
+        uprightBody:
+          '索維羅（Sowilo，對應字母 S、發音 SO-will-oh、代表意義「完整」）與太陽（☉）連結。太陽主掌生命力和獨立性，這個符文與最忠誠的獅子座（♌）有關。\n\n現代意義：我們每個人都是帶著與靈性保持一致的目標，在人間展開我們獨特的旅程。當我們與靈性保持完美的一致性，我們就與宇宙、我們的高我和我們的神聖創造者連結。當我們處於一致的狀態時，我們會感到平靜和滿足。這是我們身為靈性生命的自然狀態。\n\n接著，人生嚴酷且意外地向我們走來。當我們感覺憤怒、悲傷、被拒絕或寂寞時，這就暗示我們已經偏離了靈性，並且中斷了靈魂的連結。我們拚命努力地熬日子。\n\n然後……我們睡覺。我們藉由睡覺來重新設定能量。早上醒來，我們呼吸新的空氣。我們知道，我們又成功地熬過一天；我們又走了一哩路；我們又克服了另一個障礙。在與靈性一致的狀態下，我們又展開新的一天。\n\n如果你今天感到情緒低落，就做一下靜心或小睡一會兒。透過靜心和休息，我們能將自己帶回到完整和一致的感覺。你越是練習將自己轉回完整性，你就越容易與靈性保持一致並感到完整。',
+        shadowHeading: '逆位／陰影提醒：偏離靈性、中斷靈魂連結或情緒低落硬撐',
+        shadowBody:
+          '當感到憤怒、悲傷、被拒絕或寂寞時，往往代表偏離了靈性並中斷了靈魂的連結；透過睡眠重新設定能量、情緒低落時做一下靜心或小睡一會兒，就能把自己帶回完整與一致的平靜狀態。',
+        myth:
+          '結合太陽生命力與講義中的太陽（☉）及獅子座（♌）能量，象徵生命力、獨立性與忠誠，在每日的寧靜與練習中找回完整。',
+        practiceTitle: '實作練習：靜心休息重置能量，並留住早起寧靜時刻',
+        practiceBody:
+          '感到情緒低落時做靜心或小睡一會兒回到完整與一致；每天早上醒來留意那寧靜的一刻，並透過練習與意圖聚焦保持平靜。',
+        practiceSteps: [
+          '思考對你來說「成為完整」的意義是什麼，並覺察生活中哪些方面感到滿足、哪些方面需要成長。',
+          '若今天感到情緒低落或偏離靈性，做一下靜心或小睡一會兒，透過休息重新設定能量並回到完整感。',
+          '早上醒來時留意那寧靜的一刻，盡量保持該寧靜狀態，並聚焦意圖與練習保持與靈性一致以找到平靜。'
+        ],
+        reflectionQuestions: [
+          '對你來說，成為完整的意義是什麼？',
+          '你對生活中的哪些方面全然感到滿足？',
+          '你覺得自己生活中的哪些方面需要成長？'
+        ],
+        summary:
+          '索維羅的出現是在提醒我們，我們每天都可以在靈性上重新設定。早上一醒來，注意那寧靜的一刻，並盡量保持那個寧靜狀態。隨著練習和意圖的聚焦，你能保持與靈性一致，如此一來，你便能找到你所尋找的平靜。'
+      },
+      {
+        id: 'tiwaz',
+        order: 17,
+        deckNumber: 18,
+        glyph: 'ᛏ',
+        nameZh: '帝瓦茲',
+        nameEn: 'Teiwaz',
+        letter: 'T',
+        pronunciation: 'TEE-wawz',
+        coreMeaning: '戰士（Warrior）· 活在當下、釋放懊悔恐懼與內在戰士肯定語',
+        association: '火星（♂）與 牡羊座（♈）· 幹勁、侵略與陽性能量',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 18 篇',
+        isRichCore: true,
+        keywords: ['戰士', '完全處於當下', '火星與牡羊', '釋放懊悔與擔憂', '內在戰士肯定語'],
+        uprightHeading: '正位核心能量：內在戰士、完全處於當下與平靜覺察',
+        uprightBody:
+          '帝瓦茲（Teiwaz，對應字母 T、發音 TEE-wawz、代表意義「戰士」）與火星（♂）有強大的連結。火星喚起幹勁、侵略和陽性的能量，這個符文對應的是最主動又最安靜不下來的牡羊座（♈）。\n\n現代意義：讓身心安靜下來是你必須掌握的技巧。學會在對話、做事或放鬆時完全處於當下，將大大增進你情感的幸福。懊悔過去，抑制了你當下所能感受的喜悅；擔憂未來，產生了恐懼，並可能阻礙我們向前邁進。\n\n釋放你內在的戰士吧！戰士是完全處於當下的。她靜靜地掃瞄她的周圍，注意身邊的任何動靜。她既不期待，也不擔憂。她的內在和外在都是平靜的。就算有什麼狀況發生，她也已準備好行動。她的力量來自於她能夠單純地存在。\n\n在心中將自己視為戰士——自信、處於當下、力量強大。放下所有雜念紛飛的念頭，或同時做多件事的傾向。聚焦在眼前的一刻，並注意你的感覺有什麼不同。這需要練習，但這是你能掌握的事。擁抱你內在的戰士吧！',
+        shadowHeading: '逆位／陰影提醒：懊悔過去、擔憂未來恐懼或雜念紛飛一心多用',
+        shadowBody:
+          '懊悔過去會抑制當下能感受的喜悅，擔憂未來則會滋生恐懼並阻礙前進；放下雜念紛飛與一心多用的傾向，練習讓身心安靜並回到眼前的一刻，才能喚醒內在戰士的平靜與力量。',
+        myth:
+          '結合戰神勇氣與講義中的火星（♂）及牡羊座（♈）能量，象徵幹勁、陽性能量與在平靜覺察中處於當下的內在戰士。',
+        practiceTitle: '實作練習：創造「內在戰士」肯定語，回到當下並保持平靜',
+        practiceBody:
+          '用「我是……」起頭創造一句「內在戰士」肯定語，在感到懊悔、恐懼或不在當下時重複說；放下雜念與一心多用，聚焦眼前的一刻。',
+        practiceSteps: [
+          '覺察過去使你感到懊悔的狀況與未來使你感到擔憂的狀況，練習釋放它們。',
+          '用「我是……」起頭，創造一句「內在戰士」肯定語，今天一整天重複說以幫助釋放懊悔與恐懼，並在覺得不在當下時重複它。',
+          '放下雜念紛飛或同時做多件事的傾向，聚焦眼前的一刻，注意感覺的不同，並以平靜覺察增強所見、所感與所知。'
+        ],
+        reflectionQuestions: [
+          '過去有哪些狀況使你感到後悔？',
+          '未來有哪些狀況使你感到擔憂？',
+          '用「我是……」起頭，創造一句「內在戰士」的肯定語。今天一整天都重複說這句肯定語來幫助你釋放這些懊悔和恐懼。今天當你覺得自己沒有處於當下時，就重複說你的內在戰士肯定語。'
+        ],
+        summary:
+          '帝瓦茲的出現是在鼓勵我們，停下來注視和聆聽我們周圍的事物。放下過去的懊悔和未來的擔憂。活在當下。保持覺察與平靜，以增強你的所見、所感和所知。'
+      },
+      {
+        id: 'berkano',
+        order: 18,
+        deckNumber: 2,
+        glyph: 'ᛒ',
+        nameZh: '貝爾卡諾',
+        nameEn: 'Berknan',
+        letter: 'B',
+        pronunciation: 'BEAR-kana',
+        coreMeaning: '成長（Growth）· 接納各自步調與所有經歷',
+        association: '木星（♃）與 射手座（♐）· 幸運、成功、樂觀、擴展與學習',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 2 篇',
+        isRichCore: true,
+        keywords: ['成長', '木星與射手', '不低估也不高估', '無法強迫成長', '接納所有經歷'],
+        uprightHeading: '正位核心能量：成長、各自步調與接納所有經歷',
+        uprightBody:
+          '伯卡納（Berknan，對應字母 B、發音 BEAR-kana、代表意義「成長」）與木星（♃）連結。木星召喚的是幸運、成功、樂觀、擴展和學習的能量，這個符文與最幸運的射手座（♐）有關。\n\n現代意義：生而為人，難免必須經歷出生、成長和死亡。然而，每個人的成長步調（包括精神、肉體、情感和靈性上的成長）都因人而異。有時，我們會低估自己的成長，並高估他人的成長。\n\n當我們低估自己的成長，我們會不必要地嚴厲批判自己，而忽略了我們克服過多少的困難，畢竟，我們都是從這個過程中學習的。但我們不會讚許自己走過多少路才達到今天的境地。\n\n當我們高估他人的成長，我們會對他們沒達到我們的期待而感到失望。不論是哪一種情況，我們都評斷了自己和他人。或許我們忽略了，我們都走在旅途上，我們都是隨著經歷而成長。我們無法強迫自己或他人成長。\n\n我們必須了解並接受我們現在的處境。每個人都有各自的獨特旅程，而不是對事情應該是什麼樣子加上自己的期待。',
+        shadowHeading: '逆位／陰影提醒：低估自己嚴厲批判、高估他人失望或強迫成長',
+        shadowBody:
+          '低估自己的成長會不必要地嚴厲批判自己並忽略克服的困難；高估他人的成長則容易因期待落空而失望。我們無法強迫自己或他人成長，唯有了解並接受現在的處境、不加諸期待，才能尊重每段獨特旅程。',
+        myth:
+          '結合新生滋養意象與講義中的木星（♃）及射手座（♐）能量，象徵擴展、樂觀與學習，提醒我們來到人間學習與成長，並將艱辛經歷視為邁向下一個學習層級的挑戰。',
+        practiceTitle: '實作練習：肯定自身成長步調，並放下對他人的期待',
+        practiceBody:
+          '回顧過去五年與促成成長的經歷，讚許自己走過的路；面對曾令你感到失望的人，試著用不同方式表達失望並理解對方已盡最大力量。',
+        practiceSteps: [
+          '回顧過去五年在哪些方面成長最多，以及哪些經歷促成了你的成長，肯定自己克服困難所走過的路。',
+          '檢視自己是否在精神、肉體、情感或靈性成長上過度嚴厲批判自己，練習接納現在的處境。',
+          '想起過去或現在令你感到失望的人，在心中用不同方式表達那份失望，並理解對方已經盡了最大的力量，放下強迫成長的期待。'
+        ],
+        reflectionQuestions: [
+          '過去五年來，你在人生的哪些方面成長最多？',
+          '哪些經歷促成你的成長？',
+          '想一位過去或現在令你感到失望的人。你能在心中用不同的方式表達那個失望，並了解那個人已經盡了他最大的力量嗎？'
+        ],
+        summary:
+          '有時，我們最重要的成長是來自於痛苦的經歷。伯卡納的出現是在提醒我們，我們是來人間學習和成長的。我們可以接納所有的經歷，甚至包括那些艱辛的經歷，並將它們視為幫助我們前往下一個學習層級的挑戰。'
+      },
+      {
+        id: 'ehwaz',
+        order: 19,
+        deckNumber: 5,
+        glyph: 'ᛖ',
+        nameZh: '耶瓦茲',
+        nameEn: 'Ehwaz',
+        letter: 'E',
+        pronunciation: 'EH-waz',
+        coreMeaning: '移動（Movement）· 進步、前進與踏出第一步',
+        association: '水星（☿）與 雙子座（♊）· 旅行、溝通與思想',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 5 篇',
+        isRichCore: true,
+        keywords: ['移動', '進步前進', '水星與雙子', '踏出第一步', '放下現狀'],
+        uprightHeading: '正位核心能量：移動、進步前進與主動踏出第一步',
+        uprightBody:
+          '耶瓦茲（Ehwaz，對應字母 E、發音 EH-waz、代表意義「移動」）與水星（☿）有關。水星能促進旅行、溝通和思想，這個符文與具有雙重性格的雙子座（♊）有所連結。\n\n現代意義：如果你對生活中的某方面（例如感情、事業或健康）感到拖延或停滯不前，那麼就是該做出重大改變的時候了。現在是進步和前進的時機。這可能必須從實質上的移動（例如旅行或更換住處）開始著手。此時，宇宙比以往更想要支持你。但你必須相信，更好的人生在等待著你，同時你已準備好踏出第一步來讓輪子轉動。\n\n首先，從說出你準備好做出改變開始。要具體的說出你必須在生活中的哪一方面做出改變。然後，踏出第一步。即使是小小的一步也行。整個動力必須由你開始。接著，你所要求的真正改變就會到來。',
+        shadowHeading: '逆位／陰影提醒：拖延停滯、不敢說出改變或停在原地等待',
+        shadowBody:
+          '若在感情、事業或健康上感到拖延停滯卻遲遲不願說出改變、不踏出第一步，動力就無法啟動；唯有由自己先發出意願並邁出小步，輪子才會開始轉動。',
+        myth:
+          '連結移動、律動與溝通思想的水星（☿）及雙子座（♊），象徵在宇宙支持下主動開啟前進與變化的旅程。',
+        practiceTitle: '實作練習：說出改變並踏出第一步',
+        practiceBody:
+          '先具體說出你必須在生活中的哪一方面做出改變，接著踏出哪怕是很小的一步，讓整個動力由你開始。',
+        practiceSteps: [
+          '具體說出並寫下你必須在生活中的哪一方面（如感情、事業或健康）做出改變。',
+          '踏出哪怕是小小的一步來讓輪子轉動，由你啟動這股動力。',
+          '相信更好的人生在等待著你，並留意隨之到來的真正改變。'
+        ],
+        reflectionQuestions: [
+          '你在哪一方面感覺停滯不前？',
+          '如果你有一根能讓這一面變得更好的魔杖，你會怎樣改變它？',
+          '今天你能踏出什麼樣的一小步來走向這個結果？'
+        ],
+        summary:
+          '耶瓦茲邀請我們接納生活中的移動變化。它提醒我們，我們有力量顯化出我們真正想要的生活。放下現狀，對可能性開放吧！'
+      },
+      {
+        id: 'mannaz',
+        order: 20,
+        deckNumber: 12,
+        glyph: 'ᛗ',
+        nameZh: '美納茲',
+        nameEn: 'Mannaz',
+        letter: 'M',
+        pronunciation: 'MAH-naz',
+        coreMeaning: '自我（Self）· 釐清幸福意義、擺在第一位與照顧自己',
+        association: '太陽（☉）與 獅子座（♌）· 生命力、獨立性與忠誠',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 12 篇',
+        isRichCore: true,
+        keywords: ['自我', '把自己擺在第一位', '太陽與獅子', '幸福的意義', '休息充電與讚賞'],
+        uprightHeading: '正位核心能量：自我覺察、釐清幸福意義與好好照顧自己',
+        uprightBody:
+          '美納茲（Mannaz，對應字母 M、發音 MAH-naz、代表意義「自我」）與太陽（☉）連結。太陽主掌生命力和獨立性，這個符文與最忠誠的獅子座（♌）有關。\n\n現代意義：人生有時可能既複雜又令人難以招架。你的生活步調這麼快，又要為這麼多事情負責。你經常將別人的需求擺在自己之上，以至於你的內心忽略了自己。你可能會覺得對自己好是沒必要的，但這並非事實。你非常重要。你值得對待自己像你對待別人一樣的好。當這種情況發生，它是你重新回歸中心並且喘息的機會。\n\n從今天開始，你要覺察你的人生想要什麼和需要什麼。在這些短暫又安靜的獨處時刻，認真地問自己，對你來說，幸福的意義是什麼。在你能夠對外表達並採取行動之前，你必須自己先回答這個問題。\n\n此一了解來自於你內在的自我。今天，允許你將自己擺在第一位。首先，要知道自己想要什麼，要有大聲將它說出來的勇氣，然後去追求它。你值得擁有你所要的。現在該是你將一些美好的愛返還給自己的時候了。',
+        shadowHeading: '逆位／陰影提醒：忽略內在自我、把他人需求置頂或覺得對自己好沒必要',
+        shadowBody:
+          '在快節奏與多重責任中把別人需求擺在自己之上、忽略內心或認為對自己好沒必要，會讓人失去中心與喘息空間；先在安靜獨處中釐清幸福意義、允許把自己擺在第一位並溫柔照顧自己，才能有力地表達與行動。',
+        myth:
+          '結合自我覺察與講義中的太陽（☉）及獅子座（♌）能量，象徵生命力、獨立性與忠誠，提醒將美好的愛返還給自己。',
+        practiceTitle: '實作練習：安靜獨處釐清幸福意義，並做件特別的事讚賞自己',
+        practiceBody:
+          '在短暫安靜的獨處時刻問自己「幸福的意義是什麼」，允許把自己擺在第一位，並花時間休息充電與慶賀自己。',
+        practiceSteps: [
+          '留出短暫又安靜的獨處時刻，覺察人生想要與需要什麼，並認真回答對你來說「幸福的意義是什麼」。',
+          '釐清你能掌控與無法掌控的事，允許自己將需求擺在第一位並勇敢說出、追求所想要的。',
+          '花時間休息充電並做點特別的事慶賀讚賞自己（例如享受按摩、在森林散步或吃個粉紅杯子蛋糕）。'
+        ],
+        reflectionQuestions: [
+          '對你來說，幸福的意義是什麼？',
+          '什麼是你所能掌控的？什麼是你無法掌控的？',
+          '如果你有一根能讓任何改變都變得更幸福的魔杖，你會想改變什麼？'
+        ],
+        summary:
+          '美納茲的出現是在溫和地提醒我們，花一點時間照顧自己，好讓我們能夠休息和充電。去享受按摩、在森林裡散步，或吃一個粉紅杯子蛋糕吧！今天做點特別的事來慶賀和讚賞自己。'
+      },
+      {
+        id: 'laguz',
+        order: 21,
+        deckNumber: 11,
+        glyph: 'ᛚ',
+        nameZh: '拉格斯',
+        nameEn: 'Laguz',
+        letter: 'L',
+        pronunciation: 'LA-gooz',
+        coreMeaning: '流動（Flow）· 心流狀態、自然順流與輕鬆顯化',
+        association: '月亮（☽）與 巨蟹座（♋）· 直覺、潛意識與養育衝動',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 11 篇',
+        isRichCore: true,
+        keywords: ['流動', '心流狀態', '月亮與巨蟹', '言行一致', '改變場景引發流動'],
+        uprightHeading: '正位核心能量：流動、心流狀態與輕鬆優雅地顯化',
+        uprightBody:
+          '拉格斯（Laguz，對應字母 L、發音 LA-gooz、代表意義「流動」）與月亮（☽）連結。月亮具有喚起我們的直覺、潛意識心靈和養育衝動的力量，這個符文與最感情用事的巨蟹座（♋）有關。\n\n現代意義：現在是你開始上軌道的時候了。現在所有的事物都將走向你，並輕鬆又優雅地透過你來移動。靈思乍現、疑難解答或問題的解決之道都毫不含糊地呈現在你眼前。障礙消除了；困難解決了；衝突消失了。要特別全天候地覺察你的所言所思。你的言語、心態和行為的表現必須與你渴望的結果一致。相信所有的事都是可能的，它就真的可能發生。\n\n當我們達到這種流動的自然狀態，所有的事物就會上軌道。我們忘記了時間，快樂地沉浸在眼前所做的事情上。對某些人來說，流動能使他們有無限的創意；對另一些人來說，流動能使他們全然地專注。對我們所有人來說，流動啟動了創造。它讓我們在想要的時候，顯化我們想要的東西。\n\n如果今天你很難進入這種心流狀態，那麼就改變一下場景。去你從未去過的地方旅行一天，並找出諸如藝術、音樂或大自然之類的美好事物。這些美好的事物能引發流動。今天就開啟你的流動，看看會有什麼新的想法或表達出現。',
+        shadowHeading: '逆位／陰影提醒：卡在僵局、言行心態不一致或難以進入心流',
+        shadowBody:
+          '若言行與心態和渴望結果不一致，或難以進入專注與創意的流動狀態，容易感到卡關；透過覺察所言所思、相信可能性，或改變場景接觸藝術、音樂與大自然，能重新啟動流動。',
+        myth:
+          '結合水流流動與講義中的月亮（☽）及巨蟹座（♋）能量，象徵直覺、潛意識與養育衝動，在自然心流中啟動創造與顯化。',
+        practiceTitle: '實作練習：覺察言行一致，或改變場景引發流動',
+        practiceBody:
+          '全天候覺察所言所思是否與渴望結果一致；若難以進入心流，就改變場景或接觸藝術、音樂、大自然來引發流動。',
+        practiceSteps: [
+          '全天候覺察自己的所言所思，讓言語、心態與行為表現和渴望的結果一致，並相信可能性。',
+          '若今天難以進入流動狀態，嘗試改變場景、安排一天小旅行，或走進藝術、音樂與大自然中接觸美好事物。',
+          '設定讓日子輕鬆、喜悅、優雅呈現的簡單意圖，留意湧現的新想法或表達。'
+        ],
+        reflectionQuestions: [
+          '你的生活中哪個時候曾經體驗過自然的流動？',
+          '對你來說，流動的感覺像什麼？',
+          '你生活中的哪些情況最需要流動？'
+        ],
+        summary:
+          '拉格斯的出現是在提醒我們，雖然創意和清明會自發地流經我們，但我們仍可以請求我們的日子能輕鬆、喜悅、優雅地呈現。設定這個簡單的意圖，並享受這趟旅程吧！'
+      },
+      {
+        id: 'ingwaz',
+        order: 22,
+        deckNumber: 24,
+        glyph: 'ᛜ',
+        nameZh: '英瓦茲',
+        nameEn: 'Ingwaz',
+        letter: 'NG',
+        pronunciation: 'ING-waz',
+        coreMeaning: '生育（Fertility）· 肥沃土地、新篇章與準備就緒迎回報',
+        association: '金星（♀）、天秤座（♎）與 金牛座（♉）· 浪漫、愛情、美麗、平衡與穩定',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 24 篇',
+        isRichCore: true,
+        keywords: ['生育', '肥沃土地', '金星天秤金牛', '新篇章與機會', '準備就緒迎回報'],
+        uprightHeading: '正位核心能量：生育孕育、肥沃土地與迎接新篇章回報',
+        uprightBody:
+          '英瓦茲（Ingwaz，對應字母 NG、發音 ING-waz、代表意義「生育」）與金星（♀）有關。金星以其陰性能量、喚起浪漫、愛情和美麗而為人所知，這個符文與最平衡的天秤座（♎）和最穩定的金牛座（♉）有所連結。\n\n現代意義：發生令人意外又驚奇之事的時刻已經到來。你人生新的篇章即將展開。一個偶遇或簡單的對話，就足以引發你人生的重大事件。在工作方面，它可能顯化為新的職業選擇或事業合作的機會；在個人方面，它可能燃起一段新的戀情或特別有意義的友誼。此外，它也可能代表想出新的創意，或真的懷孕生子。\n\n把所有未解決的事或尚無結論的計畫做一個決定，好讓你在新的機會出現時，能迅速又決斷地採取行動。你踏出的每一步都是肥沃的土地。今天讓自己處於準備就緒的狀態，以接收和回應那些即將到來的好消息。',
+        shadowHeading: '逆位／陰影提醒：未決事項拖延、尚未準備好或錯失新機會',
+        shadowBody:
+          '若讓未解決的事或尚無結論的計畫懸而未決，當新機會、偶遇、合作或新篇章出現時，容易難以迅速決斷地回應；為未決事項做決定並保持開放與準備就緒，才能接住即將到來的回報與好消息。',
+        myth:
+          '結合孕育豐饒與講義中的金星（♀）、天秤座（♎）及金牛座（♉）能量，象徵平衡、穩定與在肥沃土地上迎來新篇章與回報。',
+        practiceTitle: '實作練習：為未決事項做決定，踏出肥沃一步並準備迎接新事物',
+        practiceBody:
+          '把未解決的事或尚無結論的計畫做一個決定，保持開放與準備就緒，讓每一步都成為肥沃的土地，迎接即將到來的新事物與回報。',
+        practiceSteps: [
+          '寫下想到「肥沃的土地」時心中浮現的第一個東西，以及想建構的新計畫、心態或經驗。',
+          '把所有未解決的事或尚無結論的計畫做一個決定，讓自己在機會出現時能迅速決斷地採取行動。',
+          '對即將到來的事物保持開放並做好準備，相信必要工作已完成、回報即將來臨，展開新嘗試讓人生更美好。'
+        ],
+        reflectionQuestions: [
+          '想到「肥沃的土地」這個詞時，你心中浮現的第一個東西是什麼？',
+          '你想建構什麼樣的新計畫、心態或經驗？',
+          '當你展開這個新嘗試，你的人生將如何變得更美好？'
+        ],
+        summary:
+          '英瓦茲的出現是在提醒我們，幾天或幾小時內就會有新的事物出現。我們已經完成所有必要的工作，現在是回報來臨的時候了。對即將到來的事物保持開放，並做好全然的準備。'
+      },
+      {
+        id: 'othala',
+        order: 23,
+        deckNumber: 14,
+        glyph: 'ᛟ',
+        nameZh: '奧皮拉',
+        nameEn: 'Opila',
+        letter: 'O',
+        pronunciation: 'OH-pila',
+        coreMeaning: '繼承（Heritage）· 祖先的根、與生俱來的權利與慶祝自己',
+        association: '木星（♃）與 射手座（♐）· 幸運、成功、樂觀、擴展與學習',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 14 篇',
+        isRichCore: true,
+        keywords: ['繼承', '祖先的根', '木星與射手', '與生俱來的權利', '慶祝美麗的自己'],
+        uprightHeading: '正位核心能量：繼承、祖先的根與慶祝美麗的自己',
+        uprightBody:
+          '歐皮拉（Opila，對應字母 O、發音 OH-pila、代表意義「繼承」）與木星（♃）連結。木星召喚的是幸運、成功、樂觀、擴展和學習的能量，這個符文與最幸運的射手座（♐）有關。\n\n現代意義：我們是誰以及我們表達自己的方式，源自於我們祖先的根。我們選擇往回看多遠，會對我們今日的外貌、心態和情感性格產生極大的影響。在自我懷疑或缺乏信心時，我們可能會想起過去的經驗來解釋我們目前的缺陷或信心不足。我們可能將這一切歸咎於物質上的限制，例如我們的體重、財力侷限或遭遇逆境時所產生的情緒障礙。\n\n如果我們往回看得更遠一點，回到法老王、預言家和女祭司的古代，我們就可以連結到我們與生俱來的權利中那些最光榮又最受敬仰的部分。在 DNA 的層面上，我們都屬於這些東西。我們每個人都與神有一個獨特的關係。我們都擁有無盡的美和知識；我們的愛與成為愛的能力超越了時間。\n\n展望最究竟的你時，想一想你希望自己可以成為什麼樣子，並且知道你已經是那個樣子了，而且不僅止於此。',
+        shadowHeading: '逆位／陰影提醒：自我懷疑信心不足、歸咎限制或只看缺陷',
+        shadowBody:
+          '在自我懷疑或缺乏信心時，若只用過去經驗解釋缺陷，或將一切歸咎於體重、財力侷限或逆境情緒障礙，會遮蔽我們與生俱來的光榮連結與內在美；往回看得更遠、連結超越時間的愛與知識，並為自己的每一部分感到驕傲。',
+        myth:
+          '結合傳承繼承與講義中的木星（♃）及射手座（♐）能量，連結祖先的根與古老智慧，象徵與生俱來的尊貴、美與超越時間的愛。',
+        practiceTitle: '實作練習：連結祖先的根與光榮傳承，慶祝美麗的自己',
+        practiceBody:
+          '往回看得更遠、連結與生俱來的光榮與超越時間的愛，展望最究竟的自己，並抬起頭為自己的每一部分感到驕傲。',
+        practiceSteps: [
+          '寫下想到「繼承」時心中浮現的第一個人、地或物，以及從家族世系中有意識繼承的東西。',
+          '回想一直深受吸引的歷史名人與原因，找出在對方身上看見的自己特質。',
+          '抬起頭來，為自己的每一部分感到驕傲，走進使你引人注目的一切，慶祝美麗的自己。'
+        ],
+        reflectionQuestions: [
+          '想到「繼承」這個詞時，你心中浮現的第一個人、地、物是什麼？',
+          '你已經從家族世系中有意識地繼承了哪些東西？',
+          '你一直深受歷史上哪位名人的吸引？理由是什麼？你從那個人身上看見現在的自己的哪些東西，即使只是些許而已？'
+        ],
+        summary:
+          '歐皮拉的出現是在提醒我們，抬起頭來，為自己的每一部分感到驕傲。走進所有使你變得引人注目的一切。你所擁有的一切已經是你的了，永遠都是如此。慶祝美麗的自己吧！'
+      },
+      {
+        id: 'dagaz',
+        order: 24,
+        deckNumber: 4,
+        glyph: 'ᛞ',
+        nameZh: '達格斯',
+        nameEn: 'Dagaz',
+        letter: 'D',
+        pronunciation: 'DAH-gaz',
+        coreMeaning: '突破（Breakthrough）· 清楚明瞭與解脫之道',
+        association: '冥王星（♇）與 天蠍座（♏）· 力量、改變與重生',
+        aettKey: 'tyr',
+        stageLabel: '第三組 · 提爾之組（17–24）· 講義第 4 篇',
+        isRichCore: true,
+        keywords: ['突破', '清楚明瞭', '冥王星與天蠍', '放輕鬆等待', '解脫之道'],
+        uprightHeading: '正位核心能量：突破、清楚明瞭與放鬆迎向解脫',
+        uprightBody:
+          '達格斯（Dagaz，對應字母 D、發音 DAH-gaz、代表意義「突破」）與冥王星（♇）有強大的連結。冥王星與力量、改變和重生有關，在占星學上，它對應的是最愛恨分明又充滿肉慾的天蠍座（♏）。\n\n現代意義：經過嘗試錯誤和一連串的走走停停之後，你走到了完全清楚明瞭的邊緣。隨之而來的是某個重要的東西，它可能以個人或事業成就的形式到來，或可能是一個新的、更好的你的開端。它可能是一個創造性的突破、事業或學業上的努力之事，或者是一段親近的個人關係的重大改變。雖然通往你想要之物的道路可能既漫長又顛簸，但你經歷的那些奮鬥過程將會非常值得。在自我懷疑和恐懼的時刻，繼續向前進吧！要知道，宇宙永遠為你的最高和最大的利益而運作。釐清你想要的是什麼，並對它的到來有信心。\n\n現在應該做個深呼吸、放輕鬆，讓一切自然呈現。你距離你所渴望的解決之道只有數步之遙。信任這個過程，並了解此刻你就在你應該在的地方。',
+        shadowHeading: '逆位／陰影提醒：自我懷疑恐懼、過度用力抓捕或急於求成',
+        shadowBody:
+          '在漫長或顛簸的道路上，自我懷疑、恐懼或像抓捕蝴蝶般用力去抓，反而容易讓人緊繃；深呼吸放輕鬆、釐清所求並信任宇宙與過程，突破才能自然走向你。',
+        myth:
+          '結合晝夜轉折與講義中的冥王星（♇）及天蠍座（♏）能量，象徵力量、改變與重生，在嘗試錯誤與走走停停後迎來清晰與突破。',
+        practiceTitle: '實作練習：深呼吸放輕鬆，讓突破自然呈現',
+        practiceBody:
+          '釐清你想要的是什麼並對它的到來有信心，接著做個深呼吸、放輕鬆，信任過程並讓一切自然呈現。',
+        practiceSteps: [
+          '釐清你真正想要的是什麼（個人或事業成就、新的自己、創造性突破或關係改變），並對它的到來建立信心。',
+          '在自我懷疑或恐懼浮現時，深呼吸並放輕鬆，提醒自己宇宙為你的最高與最大利益運作。',
+          '信任此刻就在你應該在的地方，讓解決之道與突破自然走向你。'
+        ],
+        reflectionQuestions: [
+          '一直以來，你最掙扎或深陷其中的一件事是什麼？',
+          '在這樣的事態下，可能發生的最糟糕的事是什麼？',
+          '可能有其他你沒想過的結果嗎？那可能是什麼？'
+        ],
+        summary:
+          '你所渴望的解脫和解決之道就在不遠處。達格斯提醒你，當你不再抓捕蝴蝶時，蝴蝶就可能停在你的鼻樑上。輕鬆地等待，讓那個突破走向你吧！'
+      },
+      {
+        id: 'blank_unknown',
+        order: 25,
+        deckNumber: 25,
+        glyph: '⬡',
+        nameZh: '未知（空白）',
+        nameEn: 'Blank / Unknown',
+        letter: '空白',
+        pronunciation: '未知（空白符文）',
+        coreMeaning: '未知（Unknown）· 結果尚未明朗、耐心等待時機成熟',
+        association: '空白符文 · 尚未揭曉的未來與時機成熟',
+        aettKey: 'blank',
+        stageLabel: '空白符文 · 未知（第 25 篇）',
+        isRichCore: true,
+        keywords: ['未知', '空白符文', '結果尚未明朗', '耐心等待時機', '每日指引再抽一次'],
+        uprightHeading: '正位核心能量：未知、耐心等待時機成熟與保持開放',
+        uprightBody:
+          '空白的符文代表未知，意指結果尚未明朗化，所以無法告訴你未來的狀況；或者是，此時你不知道未來的狀況才是對你最好的。要有耐心。當時機成熟時，你就會知道更多。\n\n如果在做每日的符文指引時抽到未知，那就再抽一次。',
+        shadowHeading: '逆位／陰影提醒：急於知道未來結果或因尚未明朗而焦躁',
+        shadowBody:
+          '當結果尚未明朗時，若硬要提前知道未來狀況或感到焦躁不耐，反而容易錯過當下的安定；不知道未來狀況有時正是對你最好的安排，保持耐心等待時機成熟，若做每日符文指引抽到未知，那就再抽一次。',
+        myth:
+          '以空白符號象徵尚未明朗的未來與尚未揭曉的篇章，提醒在時機成熟前放下急切、保有耐心與信任。',
+        practiceTitle: '實作練習：在結果未明朗時保持耐心，並留意每日指引抽牌規則',
+        practiceBody:
+          '面對尚未明朗的狀況時保持耐心，相信不知道未來狀況有時正是對你最好的安排；若做每日符文指引抽到未知，那就再抽一次。',
+        practiceSteps: [
+          '覺察目前有哪些結果尚未明朗化的事情，提醒自己要有耐心，不知道未來狀況有時正是對你最好的。',
+          '放下急於知道答案的焦慮，讓事情在時機成熟時自然揭曉更多訊息。',
+          '如果在做每日的符文指引時抽到未知，那就再抽一次。'
+        ],
+        reflectionQuestions: [
+          '目前有哪些結果尚未明朗化、需要你保持耐心的事情？',
+          '如果「不知道未來的狀況」此時正是對你最好的，這會帶給你什麼樣的安心感？',
+          '如果在做每日的符文指引時抽到未知，你會如何再抽一次並留意新的訊息？'
+        ],
+        summary:
+          '空白的符文代表未知，意指結果尚未明朗化，所以無法告訴你未來的狀況；或者是，此時你不知道未來的狀況才是對你最好的。要有耐心。當時機成熟時，你就會知道更多。如果在做每日的符文指引時抽到未知，那就再抽一次。'
+      }
+    ];
+
+    const RUNE_MAP = Object.fromEntries(RUNES_DATA.map(r => [r.id, r]));
+
+    // LocalStorage Keys
+    const STORAGE_KEYS = {
+      progress: 'futhark_atlas_progress_v2',
+      notes: 'futhark_atlas_rune_notes_v2',
+      reflections: 'futhark_atlas_rune_reflections_v2',
+      practiceDone: 'futhark_atlas_practice_done_v2',
+      globalNotes: 'futhark_atlas_global_notes_v2',
+      drawLogs: 'futhark_atlas_draw_logs_v2'
+    };
+
+    // 狀態管理
+    let runeStatusMap = {};       // { [id]: 'unexplored' | 'explored' | 'mastered' }
+    let runeNotesMap = {};        // { [id]: string }
+    let runeReflectionsMap = {};  // { [id]: string }
+    let runePracticeMap = {};     // { [id]: boolean }
+    let drawLogsList = [];        // [{ id, dateStr, question, runeId, isRetry }]
+    let activeStageFilter = 'all';
+    let activeStatusFilter = 'all';
+    let activeCelestialFilter = 'all';
+    let searchQuery = '';
+    let guidedRuneId = null;
+    let currentDetailRuneId = null;
+    let currentEnergyMode = 'upright';
+    let showStrokeGuide = true;
+    let isDrawingStroke = false;
+
+    function showSystemNotice(message) {
+      const bar = document.getElementById('systemNoticeBar');
+      const textEl = document.getElementById('systemNoticeText');
+      if (!bar || !textEl) return;
+      textEl.textContent = message;
+      bar.classList.remove('hidden');
+    }
+
+    function hideSystemNotice() {
+      const bar = document.getElementById('systemNoticeBar');
+      if (bar) bar.classList.add('hidden');
+    }
+
+    function getStatusStyle(status) {
+      if (status === 'mastered') {
+        return {
+          label: '已學會',
+          badgeClass: 'bg-ember/20 text-emberBright border-ember/45',
+          dotClass: 'bg-emberBright'
+        };
+      }
+      if (status === 'explored') {
+        return {
+          label: '已探索',
+          badgeClass: 'bg-frost/20 text-frostBright border-frost/45',
+          dotClass: 'bg-frostBright'
+        };
+      }
+      return {
+        label: '未探索',
+        badgeClass: 'bg-charcoal text-mutedText border-white/10',
+        dotClass: 'bg-mutedText/60'
+      };
+    }
+
+    /**
+     * 安全讀取 LocalStorage
+     */
+    function safeReadJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed || fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    function safeWriteJson(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (_) {
+        // 忽略儲存配額或限制
+      }
+    }
+
+    /**
+     * 載入所有儲存資料
+     */
+    function loadAllState() {
+      runeStatusMap = safeReadJson(STORAGE_KEYS.progress, {});
+      runeNotesMap = safeReadJson(STORAGE_KEYS.notes, {});
+      runeReflectionsMap = safeReadJson(STORAGE_KEYS.reflections, {});
+      runePracticeMap = safeReadJson(STORAGE_KEYS.practiceDone, {});
+      const loadedLogs = safeReadJson(STORAGE_KEYS.drawLogs, []);
+      drawLogsList = Array.isArray(loadedLogs) ? loadedLogs : [];
+
+      RUNES_DATA.forEach(r => {
+        if (!['unexplored', 'explored', 'mastered'].includes(runeStatusMap[r.id])) {
+          runeStatusMap[r.id] = 'unexplored';
+        }
+      });
+
+      try {
+        const gNotes = localStorage.getItem(STORAGE_KEYS.globalNotes);
+        const ta = document.getElementById('globalNotesTextarea');
+        const st = document.getElementById('globalNotesStatus');
+        if (gNotes !== null && ta && st) {
+          ta.value = gNotes;
+          st.textContent = gNotes.trim()
+            ? `已載入總覽筆記（${gNotes.trim().length} 字）`
+            : '尚未輸入總覽筆記';
+        }
+      } catch (_) {
+        // 忽略
+      }
+    }
+
+    /**
+     * 匯出與匯入 JSON 備份
+     */
+    function exportStudyBackup() {
+      try {
+        const payload = {
+          app: 'futhark_atlas',
+          version: 2,
+          exportedAt: new Date().toISOString(),
+          progress: runeStatusMap,
+          notes: runeNotesMap,
+          reflections: runeReflectionsMap,
+          practiceDone: runePracticeMap,
+          drawLogs: drawLogsList,
+          review: reviewMap,
+          globalNotes: document.getElementById('globalNotesTextarea')?.value || ''
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const dateStamp = new Date().toISOString().slice(0, 10);
+        link.href = url;
+        link.download = `futhark-learning-backup-${dateStamp}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        try { localStorage.setItem('futhark_atlas_last_backup_v1', String(Date.now())); } catch (_) {}
+        showSystemNotice(`已匯出學習備份檔（futhark-learning-backup-${dateStamp}.json），包含進度、筆記、反思與抽牌紀錄。`);
+      } catch (_) {
+        showSystemNotice('匯出備份時發生錯誤，請稍後再試。');
+      }
+    }
+
+    function triggerImportBackup() {
+      const input = document.getElementById('importBackupInput');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    }
+
+    function handleImportBackupFile(event) {
+      const file = event?.target?.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || '{}'));
+          if (!data || typeof data !== 'object') {
+            showSystemNotice('備份檔格式不正確，無法還原。');
+            return;
+          }
+
+          if (data.progress && typeof data.progress === 'object') {
+            RUNES_DATA.forEach(r => {
+              if (['unexplored', 'explored', 'mastered'].includes(data.progress[r.id])) {
+                runeStatusMap[r.id] = data.progress[r.id];
+              }
+            });
+            safeWriteJson(STORAGE_KEYS.progress, runeStatusMap);
+          }
+
+          if (data.notes && typeof data.notes === 'object') {
+            runeNotesMap = { ...runeNotesMap, ...data.notes };
+            safeWriteJson(STORAGE_KEYS.notes, runeNotesMap);
+          }
+
+          if (data.reflections && typeof data.reflections === 'object') {
+            runeReflectionsMap = { ...runeReflectionsMap, ...data.reflections };
+            safeWriteJson(STORAGE_KEYS.reflections, runeReflectionsMap);
+          }
+
+          if (data.practiceDone && typeof data.practiceDone === 'object') {
+            runePracticeMap = { ...runePracticeMap, ...data.practiceDone };
+            safeWriteJson(STORAGE_KEYS.practiceDone, runePracticeMap);
+          }
+
+          if (Array.isArray(data.drawLogs)) {
+            drawLogsList = data.drawLogs.slice(0, 60);
+            safeWriteJson(STORAGE_KEYS.drawLogs, drawLogsList);
+          }
+
+          if (data.review && typeof data.review === 'object') {
+            reviewMap = { ...data.review };
+            saveReview();
+          }
+
+          if (typeof data.globalNotes === 'string') {
+            const ta = document.getElementById('globalNotesTextarea');
+            if (ta) ta.value = data.globalNotes;
+            saveGlobalNotes(true);
+          }
+
+          updateOverallProgress();
+          renderLearningMap();
+          renderDrawHistory();
+          if (!document.getElementById('runeDetailOverlay').classList.contains('hidden')) {
+            renderDetailPanel();
+          }
+          showSystemNotice(`已成功還原「${file.name}」的學習紀錄與筆記。`);
+        } catch (_) {
+          showSystemNotice('無法解析此 JSON 檔案，請確認是否為有效的學習備份檔。');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /**
+     * 每日指引抽牌與占卜紀錄本
+     */
+    function drawDailyRune(isRetry) {
+      const pool = isRetry
+        ? RUNES_DATA.filter(r => r.id !== 'blank_unknown')
+        : RUNES_DATA;
+      const picked = pool[Math.floor(Math.random() * pool.length)];
+      const qInput = document.getElementById('drawQuestionInput');
+      const questionText = (qInput?.value || '').trim();
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const dateStr = `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+      const entry = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        dateStr,
+        question: questionText || '今日整體指引與覺察',
+        runeId: picked.id,
+        isRetry: Boolean(isRetry),
+        reversed: picked.id !== 'blank_unknown' && Math.random() < 0.5
+      };
+
+      drawLogsList = [entry, ...drawLogsList].slice(0, 40);
+      safeWriteJson(STORAGE_KEYS.drawLogs, drawLogsList);
+
+      guidedRuneId = picked.id;
+      renderLearningMap();
+      renderDrawHistory();
+
+      showDrawStage(picked, entry.reversed, questionText, Boolean(isRetry));
+    }
+
+    function clearDrawLogs() {
+      drawLogsList = [];
+      safeWriteJson(STORAGE_KEYS.drawLogs, drawLogsList);
+      renderDrawHistory();
+      showSystemNotice('已清空每日抽牌紀錄。');
+    }
+
+    function renderDrawHistory() {
+      const box = document.getElementById('drawHistoryList');
+      if (!box) return;
+
+      if (!drawLogsList.length) {
+        box.innerHTML = `
+          <div class="rounded-2xl bg-obsidian/70 border border-white/10 p-5 text-xs sm:text-sm text-mutedText">
+            尚無抽牌紀錄。輸入今日想問的事後，點選「✦ 抽取今日指引」即可開始累積你的盧恩占卜日誌。
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = drawLogsList
+        .slice(0, 8)
+        .map(item => {
+          const rune = RUNE_MAP[item.runeId] || RUNES_DATA[0];
+          const safeQ = item.question.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `
+            <div class="rounded-2xl bg-obsidian/85 border border-white/10 hover:border-ember/45 p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-colors">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-12 rounded-xl bg-charcoal border border-ember/35 flex items-center justify-center font-display text-2xl text-emberBright shrink-0">
+                  ${rune.glyph}
+                </div>
+                <div class="min-w-0 space-y-0.5">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-serifTc font-bold text-sm text-parchment">${rune.nameZh} ${rune.nameEn}</span>
+                    ${item.isRetry ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-frost/20 text-frostBright border border-frost/35">未知再抽</span>' : ''}
+                    ${item.reversed ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-obsidian text-frostBright border border-frost/35">逆位</span>' : ''}
+                    <span class="text-[11px] text-mutedText">${item.dateStr}</span>
+                  </div>
+                  <p class="text-xs text-mutedText truncate">提問：${safeQ}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onclick="openRuneFromLog('${rune.id}', ${item.reversed ? 'true' : 'false'})"
+                class="px-3 py-1.5 rounded-xl bg-charcoal hover:bg-slateStone border border-white/15 text-xs font-semibold text-emberBright shrink-0 self-end sm:self-auto"
+              >
+                查看講義 →
+              </button>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    /**
+     * 更新整體學習進度條
+     */
+    function updateOverallProgress() {
+      const total = RUNES_DATA.length;
+      let explored = 0;
+      let mastered = 0;
+
+      RUNES_DATA.forEach(r => {
+        const s = runeStatusMap[r.id];
+        if (s === 'explored') explored += 1;
+        if (s === 'mastered') mastered += 1;
+      });
+
+      const touched = explored + mastered;
+      const pct = Math.round((touched / total) * 100);
+
+      document.getElementById('progressCountText').textContent = `${touched} / ${total}`;
+      document.getElementById('exploredCountText').textContent = `${explored}`;
+      document.getElementById('masteredCountText').textContent = `${mastered}`;
+      document.getElementById('progressPercentText').textContent = `${pct}%`;
+      document.getElementById('overallProgressBar').style.width = `${pct}%`;
+    }
+
+    function resetLearningProgress() {
+      RUNES_DATA.forEach(r => {
+        runeStatusMap[r.id] = 'unexplored';
+      });
+      guidedRuneId = null;
+      safeWriteJson(STORAGE_KEYS.progress, runeStatusMap);
+      updateOverallProgress();
+      renderLearningMap();
+      if (!document.getElementById('runeDetailOverlay').classList.contains('hidden')) {
+        renderDetailPanel();
+      }
+    }
+
+    /**
+     * 階段、狀態與天體篩選與搜尋
+     */
+    function setStageFilter(filterKey) {
+      activeStageFilter = filterKey;
+      updateFilterTabStyles();
+      renderLearningMap();
+    }
+
+    function setStatusFilter(statusKey) {
+      activeStatusFilter = statusKey;
+      updateStatusFilterStyles();
+      renderLearningMap();
+    }
+
+    function setCelestialFilter(celestialKey) {
+      activeCelestialFilter = celestialKey;
+      updateCelestialFilterStyles();
+      renderLearningMap();
+    }
+
+    function updateFilterTabStyles() {
+      const tabs = document.querySelectorAll('.filter-tab');
+      tabs.forEach(btn => {
+        const isActive = btn.getAttribute('data-filter') === activeStageFilter;
+        btn.className = isActive
+          ? 'filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-ember text-obsidian shadow-emberGlow transition-all'
+          : 'filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-obsidian/80 hover:bg-slateStone text-parchment/85 border border-white/10 transition-all';
+      });
+    }
+
+    function updateStatusFilterStyles() {
+      const btns = document.querySelectorAll('.status-filter-btn');
+      btns.forEach(btn => {
+        const isActive = btn.getAttribute('data-status-filter') === activeStatusFilter;
+        btn.className = isActive
+          ? 'status-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-frost text-obsidian shadow-frostGlow transition-all'
+          : 'status-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-obsidian/80 hover:bg-slateStone text-parchment/85 border border-white/10 transition-all';
+      });
+    }
+
+    function updateCelestialFilterStyles() {
+      const btns = document.querySelectorAll('.celestial-filter-btn');
+      btns.forEach(btn => {
+        const isActive = btn.getAttribute('data-celestial-filter') === activeCelestialFilter;
+        btn.className = isActive
+          ? 'celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-ember/25 text-emberBright border border-ember/60 transition-all'
+          : 'celestial-filter-btn px-2.5 py-1.5 rounded-xl text-xs font-medium bg-obsidian/75 hover:bg-slateStone text-mutedText hover:text-parchment border border-white/10 transition-all';
+      });
+    }
+
+    function handleSearchInput(val) {
+      searchQuery = (val || '').trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !searchQuery);
+      }
+      // 防抖：停止輸入 180ms 後才重繪，避免每個按鍵都整頁重建
+      clearTimeout(handleSearchInput._t);
+      handleSearchInput._t = setTimeout(renderLearningMap, 180);
+    }
+
+    function clearRuneSearch() {
+      const input = document.getElementById('runeSearchInput');
+      if (input) input.value = '';
+      handleSearchInput('');
+    }
+
+    function runeMatchesFilters(rune) {
+      const st = runeStatusMap[rune.id] || 'unexplored';
+      if (activeStatusFilter === 'unlearned' && st === 'mastered') return false;
+      if (activeStatusFilter === 'explored' && st !== 'explored') return false;
+      if (activeStatusFilter === 'mastered' && st !== 'mastered') return false;
+
+      if (activeCelestialFilter && activeCelestialFilter !== 'all') {
+        const assocText = `${rune.association || ''} ${(rune.keywords || []).join(' ')}`;
+        if (!assocText.includes(activeCelestialFilter)) return false;
+      }
+
+      if (!searchQuery) return true;
+      const haystack = [
+        String(rune.order),
+        rune.glyph,
+        rune.nameZh,
+        rune.nameEn,
+        rune.letter,
+        rune.pronunciation,
+        rune.coreMeaning,
+        rune.association,
+        rune.stageLabel,
+        ...(rune.keywords || []),
+        rune.uprightBody || '',
+        rune.summary || ''
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(searchQuery);
+    }
+
+    /**
+     * 渲染 24 盧恩學習地圖
+     */
+    function renderLearningMap() {
+      const container = document.getElementById('learningStagesContainer');
+      container.innerHTML = '';
+
+      const groups = [
+        {
+          key: 'freyr',
+          badge: 'AETT 01 · 1–8',
+          title: '第一組 · 弗雷之組（Freyr\'s Aett）',
+          desc: '從 Fehu 流動財富、Uruz 野性耐力與 Ansuz 直覺信號展開，奠定創世、力量、智慧、旅程與喜悅的根基。',
+          accent: 'ember',
+          runes: RUNES_DATA.filter(r => r.aettKey === 'freyr')
+        },
+        {
+          key: 'heimdall',
+          badge: 'AETT 02 · 9–16',
+          title: '第二組 · 海姆達爾／自然組（Haglaz\'s Aett）',
+          desc: '走過冰雹、困境、靜止、收成、紫杉軸心、未知機緣、守護與日光，體會自然週期與試煉中的定力。',
+          accent: 'frost',
+          runes: RUNES_DATA.filter(r => r.aettKey === 'heimdall')
+        },
+        {
+          key: 'tyr',
+          badge: 'AETT 03 · 17–24',
+          title: '第三組 · 提爾之組（Tyr\'s Aett）',
+          desc: '在誓約勇氣、新生滋養、默契合作、群體自覺、深水直覺、潛能種子、傳承家園與破曉中完成昇華。',
+          accent: 'ember',
+          runes: RUNES_DATA.filter(r => r.aettKey === 'tyr')
+        },
+        {
+          key: 'blank',
+          badge: 'BLANK · 25',
+          title: '空白符文 · 未知（25 未知）',
+          desc: '代表結果尚未明朗化或不知道未來才是對你最好的時刻；要有耐心，時機成熟時自然會知道更多，每日指引抽到未知時可再抽一次。',
+          accent: 'frost',
+          runes: RUNES_DATA.filter(r => r.aettKey === 'blank')
+        }
+      ];
+
+      let visibleGroups = groups;
+      if (
+        activeStageFilter === 'freyr' ||
+        activeStageFilter === 'heimdall' ||
+        activeStageFilter === 'tyr' ||
+        activeStageFilter === 'blank'
+      ) {
+        visibleGroups = groups.filter(g => g.key === activeStageFilter);
+      }
+
+      let totalMatchedCards = 0;
+
+      visibleGroups.forEach(group => {
+        const filteredRunes = group.runes.filter(r => {
+          if (activeStageFilter === 'core' && !r.isRichCore) return false;
+          return runeMatchesFilters(r);
+        });
+
+        if (filteredRunes.length === 0) return;
+        totalMatchedCards += filteredRunes.length;
+
+        const isEmber = group.accent === 'ember';
+        const sectionEl = document.createElement('div');
+        sectionEl.className = 'rounded-3xl nordic-surface shadow-stoneCard p-5 sm:p-7 space-y-5';
+
+        const exploredInGroup = group.runes.filter(r => runeStatusMap[r.id] !== 'unexplored').length;
+
+        sectionEl.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/10 pb-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="font-display text-xs font-semibold tracking-wider px-2.5 py-0.5 rounded-full ${
+                  isEmber
+                    ? 'bg-ember/20 text-emberBright border border-ember/35'
+                    : 'bg-frost/20 text-frostBright border border-frost/35'
+                }">${group.badge}</span>
+                <span class="text-xs text-mutedText">本組已探索：${exploredInGroup} / ${group.runes.length}</span>
+              </div>
+              <h3 class="font-serifTc text-xl sm:text-2xl font-bold text-parchment">${group.title}</h3>
+              <p class="text-xs sm:text-sm text-mutedText leading-relaxed">${group.desc}</p>
+            </div>
+          </div>
+        `;
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-3.5';
+
+        filteredRunes.forEach(rune => {
+          const st = runeStatusMap[rune.id] || 'unexplored';
+          const stMeta = getStatusStyle(st);
+          const isGuided = guidedRuneId === rune.id;
+
+          const cardBtn = document.createElement('button');
+          cardBtn.type = 'button';
+          cardBtn.onclick = () => openRuneDetail(rune.id);
+
+          // 統一所有符文卡片外框樣式
+          const borderClass = 'border-white/15 hover:border-emberBright/70';
+
+          cardBtn.className = `map-node text-left rounded-2xl bg-obsidian/85 hover:bg-slateStone/95 border ${borderClass} ${
+            isGuided ? 'map-node-guided' : ''
+          } p-3.5 flex flex-col justify-between gap-2.5 group`;
+
+          const glyphColor = rune.isRichCore
+            ? 'text-emberBright'
+            : 'text-parchment group-hover:text-emberBright transition-colors';
+
+          cardBtn.innerHTML = `
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-[11px] font-display text-mutedText">#${String(rune.order).padStart(2, '0')}</span>
+              <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md border ${stMeta.badgeClass}">
+                <span class="w-1.5 h-1.5 rounded-full ${stMeta.dotClass}"></span>
+                ${stMeta.label}
+              </span>
+            </div>
+
+            <div class="my-1 flex items-center justify-center py-2 rounded-xl bg-charcoal/85 border border-white/5">
+              <span class="font-display text-3xl sm:text-4xl ${glyphColor}">${rune.glyph}</span>
+            </div>
+
+            <div class="space-y-0.5">
+              <div class="font-serifTc font-bold text-sm text-parchment truncate">${rune.nameZh}</div>
+              <div class="text-[11px] text-mutedText font-display truncate">${rune.nameEn} · ${rune.letter}</div>
+              <div class="text-[10px] ${
+                rune.isRichCore ? 'text-emberBright font-medium' : 'text-mutedText/80'
+              } pt-0.5 truncate">
+                ${rune.isRichCore ? '★ 完整講義' : rune.keywords[0]}
+              </div>
+            </div>
+          `;
+
+          grid.appendChild(cardBtn);
+        });
+
+        sectionEl.appendChild(grid);
+        container.appendChild(sectionEl);
+      });
+
+      if (totalMatchedCards === 0) {
+        const emptyBox = document.createElement('div');
+        emptyBox.className = 'rounded-3xl nordic-surface p-8 text-center space-y-3';
+        emptyBox.innerHTML = `
+          <p class="text-sm text-parchment font-medium">找不到符合目前篩選或搜尋條件的符文</p>
+          <button
+            type="button"
+            onclick="clearRuneSearch(); setStageFilter('all'); setStatusFilter('all'); setCelestialFilter('all');"
+            class="px-4 py-2 rounded-xl bg-ember/20 hover:bg-ember/30 text-emberBright border border-ember/40 text-xs font-semibold"
+          >
+            重設全部篩選與搜尋
+          </button>
+        `;
+        container.appendChild(emptyBox);
+      }
+    }
+
+    /**
+     * 隨緣抽牌 / 學習引導
+     */
+    function triggerGuidedDraw() {
+      const unexplored = RUNES_DATA.filter(r => (runeStatusMap[r.id] || 'unexplored') === 'unexplored');
+      const pool = unexplored.length > 0 ? unexplored : RUNES_DATA;
+      const chosen = pool[Math.floor(Math.random() * pool.length)];
+
+      guidedRuneId = chosen.id;
+      renderLearningMap();
+
+      const banner = document.getElementById('guidedBanner');
+      document.getElementById('guidedBadge').textContent = unexplored.length > 0 ? '下一步學習引導' : '隨緣抽牌靈感';
+      document.getElementById('guidedMessage').textContent =
+        `推薦符文：${chosen.nameZh} ${chosen.nameEn}（${chosen.glyph} · ${chosen.stageLabel}）—— 核心意義：「${chosen.coreMeaning}」。`;
+      document.getElementById('guidedOpenBtn').onclick = () => openRuneDetail(chosen.id);
+      banner.classList.remove('hidden');
+    }
+
+    function hideGuidedBanner() {
+      document.getElementById('guidedBanner').classList.add('hidden');
+    }
+
+    /**
+     * 展開符文詳情面板（滑出抽屜 / 手機底抽式面板）
+     */
+    function openRuneDetail(runeId) {
+      if (!RUNE_MAP[runeId]) return;
+      currentDetailRuneId = runeId;
+      currentEnergyMode = 'upright';
+
+      const needRefreshMap = (runeStatusMap[runeId] || 'unexplored') === 'unexplored';
+      if (needRefreshMap) {
+        runeStatusMap[runeId] = 'explored';
+        safeWriteJson(STORAGE_KEYS.progress, runeStatusMap);
+        updateOverallProgress();
+      }
+
+      renderDetailPanel();
+      const overlay = document.getElementById('runeDetailOverlay');
+      overlay.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+
+      const panel = document.getElementById('runeDetailPanel');
+      if (panel) panel.scrollTop = 0;
+      initStrokeCanvas(RUNE_MAP[runeId]);
+
+      // 先讓面板畫出來，背景地圖延後重繪，點擊才不會卡
+      if (needRefreshMap) setTimeout(renderLearningMap, 60);
+    }
+
+    function closeRuneDetail() {
+      document.getElementById('runeDetailOverlay').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function handleOverlayClick(event) {
+      if (event.target && event.target.id === 'runeDetailOverlay') {
+        closeRuneDetail();
+      }
+    }
+
+    function setRuneLearningStatus(runeId, status) {
+      if (!RUNE_MAP[runeId] || !['unexplored', 'explored', 'mastered'].includes(status)) return;
+      runeStatusMap[runeId] = status;
+      safeWriteJson(STORAGE_KEYS.progress, runeStatusMap);
+      updateOverallProgress();
+      renderLearningMap();
+      if (currentDetailRuneId === runeId) {
+        renderDetailPanel();
+      }
+    }
+
+    function toggleQuickLearned() {
+      const current = runeStatusMap[currentDetailRuneId] || 'unexplored';
+      const next = current === 'mastered' ? 'explored' : 'mastered';
+      setRuneLearningStatus(currentDetailRuneId, next);
+    }
+
+    function setDetailEnergyMode(mode) {
+      currentEnergyMode = mode === 'shadow' ? 'shadow' : 'upright';
+      renderEnergyBlock();
+    }
+
+    function navigateAdjacentRune(delta) {
+      const idx = RUNES_DATA.findIndex(r => r.id === currentDetailRuneId);
+      if (idx === -1) return;
+      const nextIdx = (idx + delta + RUNES_DATA.length) % RUNES_DATA.length;
+      openRuneDetail(RUNES_DATA[nextIdx].id);
+    }
+
+    /**
+     * 符文筆畫示範與描繪練習板
+     */
+    function toggleStrokeGuide() {
+      showStrokeGuide = !showStrokeGuide;
+      const btn = document.getElementById('toggleGuideBtn');
+      if (btn) {
+        btn.textContent = showStrokeGuide ? '底稿：開啟' : '底稿：關閉';
+      }
+      drawStrokeCanvas(RUNE_MAP[currentDetailRuneId]);
+    }
+
+    function clearStrokeCanvas() {
+      drawStrokeCanvas(RUNE_MAP[currentDetailRuneId]);
+    }
+
+    function drawStrokeCanvas(rune) {
+      const canvas = document.getElementById('runeStrokeCanvas');
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(240, Math.round(rect.width));
+      const height = Math.max(150, Math.round(rect.height));
+
+      if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      if (showStrokeGuide && rune) {
+        ctx.save();
+        ctx.font = `700 ${Math.min(110, Math.round(height * 0.62))}px "Cinzel", "Noto Serif TC", serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(232, 224, 203, 0.11)';
+        ctx.strokeStyle = 'rgba(217, 119, 36, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.fillText(rune.glyph, width / 2, height / 2 + 2);
+        ctx.strokeText(rune.glyph, width / 2, height / 2 + 2);
+        ctx.restore();
+      }
+    }
+
+    function getCanvasPoint(canvas, event) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = event.touches && event.touches[0] ? event.touches[0].clientX : event.clientX;
+      const clientY = event.touches && event.touches[0] ? event.touches[0].clientY : event.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function initStrokeCanvas(rune) {
+      const canvas = document.getElementById('runeStrokeCanvas');
+      if (!canvas) return;
+      drawStrokeCanvas(rune);
+
+      if (canvas.dataset.bound === 'true') return;
+      canvas.dataset.bound = 'true';
+
+      const ctx = canvas.getContext('2d');
+      let lastPt = null;
+
+      const startStroke = e => {
+        if (!ctx) return;
+        isDrawingStroke = true;
+        const dpr = window.devicePixelRatio || 1;
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        lastPt = getCanvasPoint(canvas, e);
+        ctx.beginPath();
+        ctx.moveTo(lastPt.x, lastPt.y);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 4.5;
+        ctx.strokeStyle = '#F0943D';
+        ctx.restore();
+      };
+
+      const moveStroke = e => {
+        if (!isDrawingStroke || !ctx || !lastPt) return;
+        if (e.cancelable) e.preventDefault();
+        const dpr = window.devicePixelRatio || 1;
+        const pt = getCanvasPoint(canvas, e);
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.beginPath();
+        ctx.moveTo(lastPt.x, lastPt.y);
+        ctx.lineTo(pt.x, pt.y);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 4.5;
+        ctx.strokeStyle = '#F0943D';
+        ctx.stroke();
+        ctx.restore();
+        lastPt = pt;
+      };
+
+      const endStroke = () => {
+        isDrawingStroke = false;
+        lastPt = null;
+      };
+
+      canvas.addEventListener('mousedown', startStroke);
+      canvas.addEventListener('mousemove', moveStroke);
+      window.addEventListener('mouseup', endStroke);
+
+      canvas.addEventListener('touchstart', startStroke, { passive: false });
+      canvas.addEventListener('touchmove', moveStroke, { passive: false });
+      window.addEventListener('touchend', endStroke);
+    }
+
+    /**
+     * 渲染詳情面板內容
+     */
+    function renderDetailPanel() {
+      const rune = RUNE_MAP[currentDetailRuneId];
+      if (!rune) return;
+
+      const isFrost = false;
+      const badge = document.getElementById('detailGlyphBadge');
+      badge.textContent = rune.glyph;
+      badge.className = isFrost
+        ? 'w-16 h-20 rounded-2xl bg-obsidian border border-frost/50 flex items-center justify-center font-display text-4xl text-frostBright shrink-0'
+        : 'w-16 h-20 rounded-2xl bg-obsidian border border-ember/50 flex items-center justify-center font-display text-4xl text-emberBright shrink-0';
+
+      const stageTag = document.getElementById('detailStageTag');
+      stageTag.textContent = rune.stageLabel;
+      stageTag.className = isFrost
+        ? 'text-xs font-semibold text-frostBright block truncate'
+        : 'text-xs font-semibold text-emberBright block truncate';
+
+      document.getElementById('detailTitle').textContent =
+        `${rune.deckNumber ? rune.deckNumber + ' ' : ''}${rune.nameZh} ${rune.nameEn}`;
+      document.getElementById('detailSubtitle').textContent =
+        `第 ${rune.order} 符文 · 對應字母 ${rune.letter} · 發音 ${rune.pronunciation}`;
+
+      // 狀態按鈕與「標記已學會」
+      const st = runeStatusMap[rune.id] || 'unexplored';
+      const stMeta = getStatusStyle(st);
+      document.getElementById('detailStatusLabel').textContent = stMeta.label;
+
+      const quickBtn = document.getElementById('quickMarkLearnedBtn');
+      if (st === 'mastered') {
+        quickBtn.textContent = '✓ 已學會（點此改為已探索）';
+        quickBtn.className =
+          'px-3 py-1.5 rounded-xl text-xs font-semibold border bg-frost/20 text-frostBright border-frost/45 transition-all';
+      } else {
+        quickBtn.textContent = '✓ 標記為已學會';
+        quickBtn.className =
+          'px-3 py-1.5 rounded-xl text-xs font-semibold border bg-ember/20 hover:bg-ember/30 text-emberBright border-ember/45 transition-all';
+      }
+
+      ['unexplored', 'explored', 'mastered'].forEach(key => {
+        const pill = document.getElementById(`statusPill-${key}`);
+        const active = key === st;
+        pill.className = active
+          ? 'py-2 px-2.5 rounded-xl text-xs font-semibold border bg-slateStone text-parchment border-emberBright'
+          : 'py-2 px-2.5 rounded-xl text-xs font-medium border bg-charcoal/70 text-mutedText border-white/10 hover:text-parchment';
+      });
+
+      document.getElementById('detailCoreMeaning').textContent = rune.coreMeaning;
+      document.getElementById('detailAssociation').textContent = rune.association;
+
+      // 關鍵詞
+      const kwBox = document.getElementById('detailKeywords');
+      kwBox.innerHTML = '';
+      (rune.keywords || []).forEach(k => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full text-xs bg-obsidian border border-bronze/40 text-parchment';
+        span.textContent = k;
+        kwBox.appendChild(span);
+      });
+
+      renderEnergyBlock();
+      drawStrokeCanvas(rune);
+
+      document.getElementById('detailMythBody').textContent = rune.myth;
+
+      // 靜心／實作練習
+      document.getElementById('detailPracticeTitle').textContent = rune.practiceTitle || '靜心與實作練習';
+      document.getElementById('detailPracticeBody').textContent = rune.practiceBody || '';
+      document.getElementById('detailPracticeDoneCheckbox').checked = Boolean(runePracticeMap[rune.id]);
+
+      const stepsContainer = document.getElementById('detailPracticeSteps');
+      stepsContainer.innerHTML = '';
+      (rune.practiceSteps || []).forEach((stepText, idx) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-start gap-2.5 text-xs sm:text-sm text-parchment/90 bg-charcoal/75 rounded-xl p-2.5 border border-white/5';
+        row.innerHTML = `<span class="font-display font-semibold text-emberBright shrink-0">0${idx + 1}</span><span>${stepText}</span>`;
+        stepsContainer.appendChild(row);
+      });
+
+      // 反思問題與輸入框
+      const qList = document.getElementById('detailReflectionQuestions');
+      qList.innerHTML = '';
+      (rune.reflectionQuestions || []).forEach(q => {
+        const li = document.createElement('li');
+        li.className = 'text-parchment/90';
+        li.textContent = q;
+        qList.appendChild(li);
+      });
+
+      document.getElementById('detailReflectionTextarea').value = runeReflectionsMap[rune.id] || '';
+      document.getElementById('detailSummaryBody').textContent = rune.summary || '';
+      document.getElementById('detailPersonalNoteTextarea').value = runeNotesMap[rune.id] || '';
+    }
+
+    function renderEnergyBlock() {
+      const rune = RUNE_MAP[currentDetailRuneId];
+      if (!rune) return;
+
+      const upTab = document.getElementById('modeTab-upright');
+      const shTab = document.getElementById('modeTab-shadow');
+      const bodyEl = document.getElementById('detailEnergyBody');
+
+      if (currentEnergyMode === 'shadow') {
+        shTab.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-frost text-obsidian transition-colors';
+        upTab.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-mutedText hover:text-parchment transition-colors';
+        document.getElementById('detailEnergyHeading').textContent = rune.shadowHeading;
+        bodyEl.innerHTML = `<p class="whitespace-pre-line">${(rune.shadowBody || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`;
+      } else {
+        upTab.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-ember text-obsidian transition-colors';
+        shTab.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-mutedText hover:text-parchment transition-colors';
+        document.getElementById('detailEnergyHeading').textContent = rune.uprightHeading;
+
+        const rawBlocks = String(rune.uprightBody || '').split(/\n\s*\n/);
+        bodyEl.innerHTML = rawBlocks
+          .map(block => {
+            const trimmed = block.trim();
+            if (!trimmed) return '';
+            const safeText = trimmed.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            if (safeText.startsWith('現代意義：')) {
+              const rest = safeText.slice('現代意義：'.length).trim();
+              return `
+                <div class="rounded-xl bg-charcoal/80 border border-ember/25 p-3.5 space-y-1.5">
+                  <div class="text-xs font-semibold tracking-wider text-emberBright">現代意義</div>
+                  <p class="leading-relaxed text-parchment/95">${rest}</p>
+                </div>
+              `;
+            }
+            return `<p class="leading-relaxed text-parchment/90">${safeText}</p>`;
+          })
+          .join('');
+      }
+    }
+
+    function handlePracticeCheckbox(checked) {
+      runePracticeMap[currentDetailRuneId] = Boolean(checked);
+      safeWriteJson(STORAGE_KEYS.practiceDone, runePracticeMap);
+      if (checked && (runeStatusMap[currentDetailRuneId] || 'unexplored') === 'unexplored') {
+        setRuneLearningStatus(currentDetailRuneId, 'explored');
+      }
+    }
+
+    function handleRuneReflectionChange(val) {
+      runeReflectionsMap[currentDetailRuneId] = val;
+      clearTimeout(handleRuneReflectionChange._t);
+      handleRuneReflectionChange._t = setTimeout(
+        () => safeWriteJson(STORAGE_KEYS.reflections, runeReflectionsMap), 400);
+    }
+
+    function handleRunePersonalNoteChange(val) {
+      runeNotesMap[currentDetailRuneId] = val;
+      clearTimeout(handleRunePersonalNoteChange._t);
+      handleRunePersonalNoteChange._t = setTimeout(
+        () => safeWriteJson(STORAGE_KEYS.notes, runeNotesMap), 400);
+      const badge = document.getElementById('detailNoteSavedBadge');
+      if (badge) badge.textContent = val.trim() ? `已儲存（${val.trim().length} 字）` : '本機自動保存';
+    }
+
+    /**
+     * 總覽筆記操作
+     */
+    function saveGlobalNotes(showExplicit) {
+      const ta = document.getElementById('globalNotesTextarea');
+      const st = document.getElementById('globalNotesStatus');
+      if (!ta || !st) return;
+      const text = ta.value;
+      try {
+        localStorage.setItem(STORAGE_KEYS.globalNotes, text);
+        st.textContent = text.trim()
+          ? `${showExplicit ? '已儲存總覽筆記' : '自動儲存於本機'}（${text.trim().length} 字）`
+          : '尚未輸入總覽筆記';
+      } catch (_) {
+        st.textContent = '無法儲存至本機';
+      }
+    }
+
+    function copyGlobalNotes() {
+      const ta = document.getElementById('globalNotesTextarea');
+      const st = document.getElementById('globalNotesStatus');
+      if (!ta || !ta.value.trim()) {
+        if (st) st.textContent = '目前沒有可複製的總覽筆記';
+        return;
+      }
+      ta.select();
+      try {
+        document.execCommand('copy');
+        if (st) st.textContent = '已複製總覽筆記至剪貼簿';
+      } catch (_) {
+        if (st) st.textContent = '請使用 Ctrl/Cmd + C 複製';
+      }
+    }
+
+    function clearGlobalNotes() {
+      const ta = document.getElementById('globalNotesTextarea');
+      const st = document.getElementById('globalNotesStatus');
+      if (ta) ta.value = '';
+      try {
+        localStorage.removeItem(STORAGE_KEYS.globalNotes);
+      } catch (_) {
+        // 忽略
+      }
+      if (st) st.textContent = '已清空總覽筆記';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const overlay = document.getElementById('runeDetailOverlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+          closeRuneDetail();
+        }
+      }
+    });
+
+    (function initAtlas() {
+      loadAllState();
+      updateFilterTabStyles();
+      updateStatusFilterStyles();
+      updateCelestialFilterStyles();
+      updateOverallProgress();
+      renderLearningMap();
+      renderDrawHistory();
+    })();
+  </script>
+
+  <!-- 抽牌翻牌舞台 -->
+  <div
+    id="drawStageOverlay"
+    onclick="if (event.target === this) closeDrawStage()"
+    class="fixed inset-0 z-[60] hidden bg-black/85 flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-label="抽牌結果"
+  >
+    <div class="w-full max-w-sm space-y-4 text-center panel-reveal">
+      <div class="flip-scene mx-auto w-56 h-80 sm:w-64 sm:h-96">
+        <div id="drawFlipCard" class="flip-card w-full h-full" role="button" tabindex="0" aria-label="翻開牌卡" onclick="flipDrawCard()">
+          <div class="flip-face rounded-3xl border-2 border-bronze/60 bg-gradient-to-br from-slateStone to-obsidian shadow-emberGlow flex flex-col items-center justify-center gap-3">
+            <span class="font-display text-7xl text-ember/80 pulse-aura">ᛟ</span>
+            <span class="text-xs tracking-widest text-mutedText">點擊翻牌</span>
+          </div>
+          <div class="flip-face flip-back-face rounded-3xl border-2 border-emberBright/70 bg-gradient-to-br from-charcoal to-obsidian shadow-emberGlow flex flex-col items-center justify-center gap-2 p-4">
+            <span id="drawFaceOrient" class="text-[11px] px-2.5 py-0.5 rounded-full border"></span>
+            <span id="drawFaceGlyph" class="font-display text-8xl text-emberBright leading-none my-3"></span>
+            <strong id="drawFaceName" class="font-serifTc text-xl text-parchment"></strong>
+            <span id="drawFaceMeaning" class="text-xs text-mutedText leading-relaxed"></span>
+          </div>
+        </div>
+      </div>
+      <p id="drawStageText" class="text-sm text-parchment/90 leading-relaxed min-h-[3.5rem] px-2 whitespace-pre-line"></p>
+      <div class="flex justify-center gap-2">
+        <button
+          id="drawStageOpenBtn"
+          type="button"
+          onclick="openDrawStageRune()"
+          class="hidden px-4 py-2 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-xs font-semibold transition-colors"
+        >
+          查看講義 →
+        </button>
+        <button
+          type="button"
+          onclick="closeDrawStage()"
+          class="px-4 py-2 rounded-xl bg-obsidian hover:bg-slateStone border border-white/20 text-xs font-semibold text-parchment transition-colors"
+        >
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 間隔複習 -->
+  <div
+    id="reviewOverlay"
+    onclick="if (event.target === this) closeReview()"
+    class="fixed inset-0 z-[60] hidden bg-black/85 flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-label="符文複習"
+  >
+    <div class="w-full max-w-md rounded-3xl nordic-surface-ember shadow-emberGlow p-6 space-y-4 text-center panel-reveal">
+      <div class="flex items-center justify-between text-xs text-mutedText">
+        <span id="reviewProgress"></span>
+        <button type="button" onclick="closeReview()" class="hover:text-parchment">✕ 結束</button>
+      </div>
+      <div id="reviewGlyph" class="font-display text-8xl text-emberBright leading-none py-2"></div>
+      <p id="reviewQuestion" class="text-sm text-parchment">這個符文的核心字義是什麼？</p>
+      <div id="reviewAnswer" class="hidden space-y-2 rounded-2xl bg-obsidian/80 border border-white/10 p-4">
+        <strong id="reviewName" class="font-serifTc text-lg text-parchment block"></strong>
+        <p id="reviewMeaning" class="text-xs sm:text-sm text-frostBright"></p>
+        <div id="reviewKeywords" class="flex flex-wrap justify-center gap-1.5"></div>
+      </div>
+      <div id="reviewActionsReveal">
+        <button type="button" onclick="revealReviewAnswer()" class="px-5 py-2 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-sm font-semibold transition-colors">顯示答案</button>
+      </div>
+      <div id="reviewActionsGrade" class="hidden grid grid-cols-2 gap-2">
+        <button type="button" onclick="gradeReview(false)" class="py-2.5 rounded-xl bg-obsidian hover:bg-slateStone border border-white/20 text-sm font-semibold text-parchment transition-colors">還不熟 · 明天再看</button>
+        <button type="button" onclick="gradeReview(true)" class="py-2.5 rounded-xl bg-frost/25 hover:bg-frost/35 border border-frost/50 text-sm font-semibold text-frostBright transition-colors">記得 ✓</button>
+      </div>
+      <div id="reviewActionsDone" class="hidden">
+        <button type="button" onclick="closeReview()" class="px-5 py-2 rounded-xl bg-ember hover:bg-emberBright text-obsidian text-sm font-semibold transition-colors">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================
+     * 擴充功能：氛圍、翻牌、筆順動畫、圓環地圖、間隔複習、快捷鍵、手勢
+     * ===================================================== */
+    const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const ambient = { ratio: 0 };
+
+    /* ---------- 間隔複習資料 ---------- */
+    const REVIEW_KEY = 'futhark_atlas_review_v1';
+    const REVIEW_INTERVALS = [1, 3, 7, 14, 30]; // 天
+    let reviewMap = safeReadJson(REVIEW_KEY, {}); // { [id]: { box, due: 'YYYY-MM-DD' } }
+    let reviewQueue = [];
+    let reviewIdx = 0;
+    let reviewStats = { ok: 0, bad: 0 };
+
+    /* ---------- 1. 進度光暈與餘燼粒子 ---------- */
+    function updateProgressGlow() {
+      let score = 0;
+      RUNES_DATA.forEach(r => {
+        const s = runeStatusMap[r.id];
+        if (s === 'mastered') score += 1;
+        else if (s === 'explored') score += 0.4;
+      });
+      ambient.ratio = Math.min(1, score / RUNES_DATA.length);
+      const glow = document.getElementById('progressGlow');
+      if (glow) glow.style.opacity = String(0.2 + 0.8 * ambient.ratio);
+    }
+
+    function initAmbient() {
+      const cv = document.getElementById('ambientCanvas');
+      if (!cv) return;
+      if (REDUCED_MOTION) { cv.style.display = 'none'; return; }
+      const ctx = cv.getContext('2d');
+      if (!ctx) return;
+
+      const makeSprite = (r, g, b) => {
+        const s = document.createElement('canvas');
+        s.width = s.height = 32;
+        const c = s.getContext('2d');
+        const grad = c.createRadialGradient(16, 16, 0, 16, 16, 16);
+        grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
+        grad.addColorStop(0.35, `rgba(${r},${g},${b},0.5)`);
+        grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = grad;
+        c.fillRect(0, 0, 32, 32);
+        return s;
+      };
+      const spriteEmber = makeSprite(255, 190, 120);
+      const spriteFrost = makeSprite(150, 215, 230);
+
+      let w = 0, h = 0, last = 0, running = false;
+      const parts = [];
+
+      const resize = () => {
+        w = cv.width = window.innerWidth;
+        h = cv.height = window.innerHeight;
+      };
+      const spawn = init => ({
+        x: Math.random() * w,
+        y: init ? Math.random() * h : h + 20,
+        r: 3 + Math.random() * 7,
+        vy: 8 + Math.random() * 16,
+        vx: (Math.random() - 0.5) * 8,
+        a: 0.25 + Math.random() * 0.5,
+        ph: Math.random() * 6.28,
+        frost: Math.random() < 0.2
+      });
+      const targetCount = () => Math.round((w < 640 ? 16 : 30) + ambient.ratio * 14);
+
+      const frame = t => {
+        if (!running) return;
+        requestAnimationFrame(frame);
+        if (t - last < 33) return; // 約 30fps
+        const dt = Math.min(0.1, (t - last) / 1000);
+        last = t;
+        ctx.clearRect(0, 0, w, h);
+
+        const target = targetCount();
+        while (parts.length < target) parts.push(spawn(true));
+        if (parts.length > target) parts.length = target;
+
+        const boost = 0.65 + 0.6 * ambient.ratio;
+        for (let i = 0; i < parts.length; i++) {
+          const p = parts[i];
+          p.y -= p.vy * dt;
+          p.x += (p.vx + Math.sin(t / 1800 + p.ph) * 6) * dt;
+          if (p.y < -20) { parts[i] = spawn(false); continue; }
+          const fadeTop = Math.min(1, p.y / (h * 0.3));
+          const fadeBottom = Math.min(1, (h - p.y) / 60);
+          const twinkle = 0.65 + 0.35 * Math.sin(t / 700 + p.ph);
+          ctx.globalAlpha = Math.max(0, p.a * twinkle * fadeTop * fadeBottom * boost);
+          const size = p.r * 2.4;
+          ctx.drawImage(p.frost ? spriteFrost : spriteEmber, p.x - size / 2, p.y - size / 2, size, size);
+        }
+        ctx.globalAlpha = 1;
+      };
+
+      const start = () => { if (running) return; running = true; last = performance.now(); requestAnimationFrame(frame); };
+      const stop = () => { running = false; };
+
+      resize();
+      window.addEventListener('resize', resize);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+      start();
+    }
+
+    /* ---------- 2. 抽牌翻牌 ---------- */
+    const drawStage = { runeId: null, reversed: false, flipped: false, timer: null };
+
+    function showDrawStage(rune, reversed, question, isRetry) {
+      const ov = document.getElementById('drawStageOverlay');
+      if (!ov || !rune) return;
+      clearTimeout(drawStage.timer);
+      drawStage.runeId = rune.id;
+      drawStage.reversed = !!reversed;
+      drawStage.flipped = false;
+      drawStage.isBlank = rune.id === 'blank_unknown';
+
+      document.getElementById('drawFlipCard').classList.remove('is-flipped');
+      const glyph = document.getElementById('drawFaceGlyph');
+      glyph.textContent = rune.glyph;
+      glyph.style.transform = reversed ? 'rotate(180deg)' : '';
+
+      const orient = document.getElementById('drawFaceOrient');
+      orient.textContent = drawStage.isBlank ? '未知' : reversed ? '逆位 · 陰影提醒' : '正位 · 核心能量';
+      orient.className = 'text-[11px] px-2.5 py-0.5 rounded-full border ' + (reversed
+        ? 'bg-frost/20 text-frostBright border-frost/45'
+        : 'bg-ember/20 text-emberBright border-ember/45');
+
+      document.getElementById('drawFaceName').textContent = `${rune.nameZh} ${rune.nameEn}`;
+      document.getElementById('drawFaceMeaning').textContent = rune.coreMeaning;
+
+      const intro = question ? `你的提問：「${question}」\n深呼吸，翻開牌卡……` : '深呼吸，翻開今日的指引……';
+      document.getElementById('drawStageText').textContent = intro;
+      document.getElementById('drawStageOpenBtn').classList.add('hidden');
+
+      ov.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      drawStage.timer = setTimeout(flipDrawCard, REDUCED_MOTION ? 150 : 1200);
+    }
+
+    function flipDrawCard() {
+      if (drawStage.flipped || !drawStage.runeId) return;
+      drawStage.flipped = true;
+      clearTimeout(drawStage.timer);
+      document.getElementById('drawFlipCard').classList.add('is-flipped');
+      const rune = RUNE_MAP[drawStage.runeId];
+      let msg = drawStage.reversed ? rune.shadowHeading : rune.uprightHeading;
+      if (drawStage.isBlank) {
+        msg = '抽到「未知」：結果尚未明朗，或此刻不知道才是最好的。若這是每日指引，可再抽一次。';
+      }
+      document.getElementById('drawStageText').textContent = msg || rune.coreMeaning;
+      document.getElementById('drawStageOpenBtn').classList.remove('hidden');
+    }
+
+    function syncBodyScrollLock() {
+      const open = id => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains('hidden');
+      };
+      const locked = open('runeDetailOverlay') || open('drawStageOverlay') || open('reviewOverlay');
+      document.body.classList.toggle('overflow-hidden', !!locked);
+    }
+
+    function closeDrawStage() {
+      clearTimeout(drawStage.timer);
+      const ov = document.getElementById('drawStageOverlay');
+      if (ov) ov.classList.add('hidden');
+      syncBodyScrollLock();
+    }
+
+    function openRuneFromLog(id, reversed) {
+      closeDrawStage();
+      openRuneDetail(id);
+      if (reversed) setDetailEnergyMode('shadow');
+    }
+
+    function openDrawStageRune() {
+      openRuneFromLog(drawStage.runeId, drawStage.reversed);
+    }
+
+    /* ---------- 3. 筆順動畫 ---------- */
+    // 座標系：寬 60、高 100；每個符文由數條折線（依筆順）組成
+    const RUNE_STROKES = {
+      fehu: [[[15, 5], [15, 95]], [[15, 40], [48, 15]], [[15, 65], [48, 40]]],
+      uruz: [[[15, 95], [15, 5], [45, 28], [45, 95]]],
+      thurisaz: [[[15, 5], [15, 95]], [[15, 25], [45, 50], [15, 75]]],
+      ansuz: [[[15, 5], [15, 95]], [[15, 18], [45, 42]], [[15, 42], [45, 66]]],
+      raidho: [[[15, 5], [15, 95]], [[15, 5], [45, 28], [15, 52], [45, 95]]],
+      kenaz: [[[40, 20], [15, 50], [40, 80]]],
+      gebo: [[[10, 10], [50, 90]], [[50, 10], [10, 90]]],
+      wunjo: [[[15, 5], [15, 95]], [[15, 5], [45, 28], [15, 52]]],
+      hagalaz: [[[15, 5], [15, 95]], [[45, 5], [45, 95]], [[15, 38], [45, 62]]],
+      nauthiz: [[[30, 5], [30, 95]], [[16, 40], [44, 62]]],
+      isa: [[[30, 5], [30, 95]]],
+      jera: [[[32, 8], [12, 30], [32, 52]], [[28, 48], [48, 70], [28, 92]]],
+      eihwaz: [[[30, 5], [30, 95]], [[30, 5], [48, 25]], [[30, 95], [12, 75]]],
+      perthro: [[[15, 5], [15, 95]], [[15, 5], [45, 25], [28, 50], [45, 75], [15, 95]]],
+      algiz: [[[30, 5], [30, 95]], [[8, 20], [30, 50], [52, 20]]],
+      sowilo: [[[40, 5], [18, 35], [42, 65], [20, 95]]],
+      tiwaz: [[[30, 5], [30, 95]], [[8, 32], [30, 5], [52, 32]]],
+      berkano: [[[15, 5], [15, 95]], [[15, 5], [45, 28], [15, 50], [45, 73], [15, 95]]],
+      ehwaz: [[[12, 5], [12, 95]], [[48, 5], [48, 95]], [[12, 5], [30, 30], [48, 5]]],
+      mannaz: [[[12, 5], [12, 95]], [[48, 5], [48, 95]], [[12, 5], [48, 50]], [[48, 5], [12, 50]]],
+      laguz: [[[15, 5], [15, 95]], [[15, 5], [45, 30]]],
+      ingwaz: [[[30, 5], [10, 50], [30, 95], [50, 50], [30, 5]]],
+      othala: [[[30, 5], [10, 35], [30, 65], [50, 35], [30, 5]], [[30, 65], [10, 95]], [[30, 65], [50, 95]]],
+      dagaz: [[[12, 10], [12, 90]], [[48, 10], [48, 90]], [[12, 10], [48, 90]], [[48, 10], [12, 90]]],
+      blank_unknown: [[[30, 5], [52, 27], [52, 73], [30, 95], [8, 73], [8, 27], [30, 5]]]
+    };
+    let strokeAnimToken = 0;
+
+    function strokeLength(pts) {
+      let len = 0;
+      for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+      return len;
+    }
+
+    function partialPoints(pts, f) {
+      let total = strokeLength(pts);
+      let remain = total * f;
+      const out = [pts[0]];
+      for (let i = 1; i < pts.length; i++) {
+        const seg = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+        if (remain >= seg) {
+          out.push(pts[i]);
+          remain -= seg;
+        } else {
+          const t = seg ? remain / seg : 0;
+          out.push([
+            pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * t,
+            pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * t
+          ]);
+          break;
+        }
+      }
+      return out;
+    }
+
+    function playStrokeOrder() {
+      const rune = RUNE_MAP[currentDetailRuneId];
+      const strokes = rune && RUNE_STROKES[rune.id];
+      const canvas = document.getElementById('runeStrokeCanvas');
+      if (!strokes || !canvas) return;
+
+      const token = ++strokeAnimToken;
+      const durations = strokes.map(s => 320 + strokeLength(s) * 7);
+      const GAP = 220;
+      const total = durations.reduce((a, b) => a + b + GAP, 0);
+      const startAt = performance.now();
+
+      const render = now => {
+        if (token !== strokeAnimToken) return;
+        const elapsed = REDUCED_MOTION ? total : now - startAt;
+
+        drawStrokeCanvas(rune); // 清畫板並畫底稿
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        const scale = Math.min((rect.height * 0.78) / 100, (rect.width * 0.8) / 60);
+        const ox = rect.width / 2 - 30 * scale;
+        const oy = rect.height / 2 - 50 * scale;
+        const P = pt => [ox + pt[0] * scale, oy + pt[1] * scale];
+
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#82C5D4';
+
+        let cursor = 0;
+        for (let i = 0; i < strokes.length; i++) {
+          const dur = durations[i];
+          if (elapsed < cursor) break;
+          const raw = Math.min(1, (elapsed - cursor) / dur);
+          const f = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+          const pts = partialPoints(strokes[i], f).map(P);
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], pts[0][1]);
+          for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+          ctx.stroke();
+
+          const [sx, sy] = P(strokes[i][0]);
+          ctx.fillStyle = '#F0943D';
+          ctx.beginPath();
+          ctx.arc(sx, sy, 9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#0D1217';
+          ctx.font = '700 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(i + 1), sx, sy + 0.5);
+          cursor += dur + GAP;
+        }
+        ctx.restore();
+
+        if (elapsed < total) requestAnimationFrame(render);
+      };
+      requestAnimationFrame(render);
+    }
+
+    /* ---------- 4. 圓環地圖 ---------- */
+    const MAP_VIEW_KEY = 'futhark_atlas_view_v1';
+    let mapView = 'cards';
+    try { mapView = localStorage.getItem(MAP_VIEW_KEY) === 'ring' ? 'ring' : 'cards'; } catch (_) {}
+
+    function setMapView(v) {
+      mapView = v === 'ring' ? 'ring' : 'cards';
+      try { localStorage.setItem(MAP_VIEW_KEY, mapView); } catch (_) {}
+      updateViewButtons();
+      renderLearningMap();
+    }
+
+    function updateViewButtons() {
+      ['cards', 'ring'].forEach(k => {
+        const btn = document.getElementById(`viewBtn-${k}`);
+        if (!btn) return;
+        const active = k === mapView;
+        btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ' +
+          (active ? 'bg-ember text-obsidian' : 'text-parchment/80 hover:bg-slateStone');
+        btn.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function polar(cx, cy, r, deg) {
+      const a = (deg * Math.PI) / 180;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+
+    const RING_AETT = {
+      freyr: { c: '#D97724', b: '#F0943D', label: '弗雷之組 1–8' },
+      heimdall: { c: '#5BA4B5', b: '#82C5D4', label: '海姆達爾之組 9–16' },
+      tyr: { c: '#B9824A', b: '#E0A870', label: '提爾之組 17–24' },
+      blank: { c: '#8A94A3', b: '#C9D1DC', label: '' }
+    };
+
+    function updateRingInfo(id) {
+      const box = document.getElementById('ringInfo');
+      if (!box) return;
+      const r = RUNE_MAP[id];
+      if (!r) {
+        box.textContent = '把滑鼠移到符文上預覽，點擊即可展開研習面板。亮起並相連的節點代表你已走過的路。';
+        return;
+      }
+      const st = getStatusStyle(runeStatusMap[r.id] || 'unexplored');
+      box.innerHTML = `
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="font-display text-4xl text-emberBright w-12 text-center shrink-0">${r.glyph}</span>
+          <div class="min-w-0">
+            <div class="font-serifTc font-bold text-parchment flex items-center gap-2 flex-wrap">
+              <span>#${String(r.order).padStart(2, '0')} ${r.nameZh} ${r.nameEn}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded-md border ${st.badgeClass}">${st.label}</span>
+            </div>
+            <p class="text-xs text-mutedText truncate">${r.coreMeaning}</p>
+          </div>
+        </div>`;
+    }
+
+    function renderRingMap() {
+      const container = document.getElementById('learningStagesContainer');
+      if (!container) return;
+      const C = 400, R = 285, NR = 29;
+      const ringRunes = RUNES_DATA.filter(r => r.aettKey !== 'blank');
+      const blank = RUNES_DATA.find(r => r.aettKey === 'blank');
+      const pts = ringRunes.map((r, i) => polar(C, C, R, -90 + i * 15));
+      const matches = r => (activeStageFilter === 'all' || r.aettKey === activeStageFilter) && runeMatchesFilters(r);
+      const statusOf = r => runeStatusMap[r.id] || 'unexplored';
+      const touched = r => statusOf(r) !== 'unexplored';
+      const f1 = n => n.toFixed(1);
+
+      let svg = `<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="rgba(232,224,203,.09)" stroke-width="1" stroke-dasharray="3 7"/>`;
+
+      pts.forEach(([x, y]) => {
+        svg += `<line x1="${C}" y1="${C}" x2="${f1(x)}" y2="${f1(y)}" stroke="rgba(232,224,203,.045)"/>`;
+      });
+
+      ['freyr', 'heimdall', 'tyr'].forEach((k, g) => {
+        const [x0, y0] = polar(C, C, R + 46, -90 + g * 120 - 7);
+        const [x1, y1] = polar(C, C, R + 46, -90 + g * 120 + 112);
+        svg += `<path d="M${f1(x0)} ${f1(y0)} A${R + 46} ${R + 46} 0 0 1 ${f1(x1)} ${f1(y1)}" fill="none" stroke="${RING_AETT[k].c}" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>`;
+        const [lx, ly] = polar(C, C, R + 68, -90 + g * 120 + 52.5);
+        svg += `<text x="${f1(lx)}" y="${f1(ly)}" text-anchor="middle" dominant-baseline="central" fill="${RING_AETT[k].b}" fill-opacity=".85" font-size="14" letter-spacing="2">${RING_AETT[k].label}</text>`;
+      });
+
+      // 已走過的相鄰符文連線
+      for (let i = 0; i < ringRunes.length; i++) {
+        const j = (i + 1) % ringRunes.length;
+        const a = ringRunes[i], b = ringRunes[j];
+        if (!touched(a) || !touched(b)) continue;
+        const both = statusOf(a) === 'mastered' && statusOf(b) === 'mastered';
+        svg += `<line x1="${f1(pts[i][0])}" y1="${f1(pts[i][1])}" x2="${f1(pts[j][0])}" y2="${f1(pts[j][1])}" stroke="${both ? '#F0943D' : '#82C5D4'}" stroke-opacity="${both ? 0.95 : 0.6}" stroke-width="3" stroke-linecap="round"/>`;
+      }
+
+      const nodeSvg = (r, x, y, rad) => {
+        const st = statusOf(r);
+        const col = RING_AETT[r.aettKey] || RING_AETT.blank;
+        const fill = st === 'mastered' ? '#2B2018' : st === 'explored' ? '#1B2A33' : '#151D26';
+        const stroke = st === 'unexplored' ? col.c : col.b;
+        const sw = st === 'mastered' ? 3.5 : st === 'explored' ? 2.5 : 1.5;
+        const so = st === 'unexplored' ? 0.5 : 1;
+        const gf = st === 'mastered' ? '#F0943D' : st === 'explored' ? col.b : '#E8E0CB';
+        const halo = st === 'mastered' ? `<circle r="${rad + 9}" fill="${col.b}" fill-opacity=".16"/>` : '';
+        const guided = guidedRuneId === r.id
+          ? `<circle r="${rad + 8}" fill="none" stroke="#F0943D" stroke-width="2" class="pulse-aura" style="transform-box:fill-box;transform-origin:center"/>`
+          : '';
+        const dim = matches(r) ? 1 : 0.22;
+        return `<g class="ring-node" data-id="${r.id}" transform="translate(${f1(x)} ${f1(y)})" opacity="${dim}" tabindex="0" role="button" aria-label="${r.nameZh} ${r.nameEn}">
+          ${halo}${guided}
+          <g class="ring-body">
+            <circle r="${rad}" fill="${fill}" stroke="${stroke}" stroke-opacity="${so}" stroke-width="${sw}"/>
+            <text text-anchor="middle" dominant-baseline="central" font-size="${rad > 35 ? 34 : 26}" fill="${gf}" fill-opacity="${st === 'unexplored' ? 0.8 : 1}" style="font-family:'Cinzel','Noto Serif TC',serif">${r.glyph}</text>
+          </g>
+        </g>`;
+      };
+
+      ringRunes.forEach((r, i) => { svg += nodeSvg(r, pts[i][0], pts[i][1], NR); });
+      if (blank) svg += nodeSvg(blank, C, C, NR + 10);
+
+      container.innerHTML = `
+        <div class="rounded-3xl nordic-surface shadow-stoneCard p-4 sm:p-6 space-y-4">
+          <svg id="ringSvg" viewBox="0 0 800 800" class="w-full max-w-[760px] mx-auto block" role="group" aria-label="盧恩圓環學習地圖">${svg}</svg>
+          <div id="ringInfo" class="rounded-2xl bg-obsidian/80 border border-white/10 p-3.5 min-h-[4.5rem] flex items-center text-xs sm:text-sm text-mutedText max-w-[760px] mx-auto w-full"></div>
+        </div>`;
+      updateRingInfo(guidedRuneId);
+
+      const el = document.getElementById('ringSvg');
+      const idOf = e => {
+        const g = e.target.closest && e.target.closest('.ring-node');
+        return g ? g.getAttribute('data-id') : null;
+      };
+      el.addEventListener('mouseover', e => { const id = idOf(e); if (id) updateRingInfo(id); });
+      el.addEventListener('focusin', e => { const id = idOf(e); if (id) updateRingInfo(id); });
+      el.addEventListener('click', e => { const id = idOf(e); if (id) openRuneDetail(id); });
+      el.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const id = idOf(e);
+        if (id) { e.preventDefault(); openRuneDetail(id); }
+      });
+    }
+
+    // 以包裝方式切換卡片／圓環渲染
+    const renderCardMap = renderLearningMap;
+    renderLearningMap = function () {
+      if (mapView === 'ring') renderRingMap();
+      else renderCardMap();
+    };
+
+    /* ---------- 5. 間隔複習 ---------- */
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function dateKey(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+    function todayStr() { return dateKey(new Date()); }
+    function addDays(str, n) {
+      const [y, m, d] = str.split('-').map(Number);
+      return dateKey(new Date(y, m - 1, d + n));
+    }
+    function saveReview() { safeWriteJson(REVIEW_KEY, reviewMap); }
+
+    function syncReviewWithStatus(firstDue) {
+      let changed = false;
+      RUNES_DATA.forEach(r => {
+        const mastered = runeStatusMap[r.id] === 'mastered';
+        if (mastered && !reviewMap[r.id]) {
+          reviewMap[r.id] = { box: 0, due: firstDue || addDays(todayStr(), REVIEW_INTERVALS[0]) };
+          changed = true;
+        } else if (!mastered && reviewMap[r.id]) {
+          delete reviewMap[r.id];
+          changed = true;
+        }
+      });
+      if (changed) saveReview();
+    }
+
+    function getDueRunes() {
+      const t = todayStr();
+      return RUNES_DATA.filter(r => reviewMap[r.id] && reviewMap[r.id].due <= t);
+    }
+
+    function refreshReviewUI() {
+      syncReviewWithStatus();
+      const n = getDueRunes().length;
+      const btn = document.getElementById('reviewDueBtn');
+      const cnt = document.getElementById('reviewDueCount');
+      if (cnt) cnt.textContent = String(n);
+      if (btn) btn.classList.toggle('hidden', n === 0);
+    }
+
+    function startReview() {
+      const ids = getDueRunes().map(r => r.id);
+      if (!ids.length) return;
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      reviewQueue = ids;
+      reviewIdx = 0;
+      reviewStats = { ok: 0, bad: 0 };
+      document.getElementById('reviewOverlay').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      showReviewCard();
+    }
+
+    function showReviewCard() {
+      const set = (id, show) => document.getElementById(id).classList.toggle('hidden', !show);
+      if (reviewIdx >= reviewQueue.length) {
+        document.getElementById('reviewGlyph').textContent = '✦';
+        document.getElementById('reviewQuestion').textContent =
+          `本輪完成：記得 ${reviewStats.ok} 個、還不熟 ${reviewStats.bad} 個。`;
+        document.getElementById('reviewProgress').textContent = '完成';
+        set('reviewAnswer', false);
+        set('reviewActionsReveal', false);
+        set('reviewActionsGrade', false);
+        set('reviewActionsDone', true);
+        return;
+      }
+      const r = RUNE_MAP[reviewQueue[reviewIdx]];
+      document.getElementById('reviewGlyph').textContent = r.glyph;
+      document.getElementById('reviewQuestion').textContent = '這個符文的核心字義是什麼？';
+      document.getElementById('reviewProgress').textContent = `第 ${reviewIdx + 1} / ${reviewQueue.length} 題`;
+      document.getElementById('reviewName').textContent = `${r.nameZh} ${r.nameEn}`;
+      document.getElementById('reviewMeaning').textContent = r.coreMeaning;
+      const kw = document.getElementById('reviewKeywords');
+      kw.innerHTML = '';
+      (r.keywords || []).forEach(k => {
+        const s = document.createElement('span');
+        s.className = 'px-2.5 py-0.5 rounded-full text-[11px] bg-charcoal border border-bronze/40 text-parchment';
+        s.textContent = k;
+        kw.appendChild(s);
+      });
+      set('reviewAnswer', false);
+      set('reviewActionsReveal', true);
+      set('reviewActionsGrade', false);
+      set('reviewActionsDone', false);
+    }
+
+    function revealReviewAnswer() {
+      document.getElementById('reviewAnswer').classList.remove('hidden');
+      document.getElementById('reviewActionsReveal').classList.add('hidden');
+      document.getElementById('reviewActionsGrade').classList.remove('hidden');
+    }
+
+    function gradeReview(ok) {
+      const id = reviewQueue[reviewIdx];
+      const e = reviewMap[id];
+      if (e) {
+        if (ok) {
+          e.box = Math.min(e.box + 1, REVIEW_INTERVALS.length - 1);
+          e.due = addDays(todayStr(), REVIEW_INTERVALS[e.box]);
+        } else {
+          e.box = 0;
+          e.due = addDays(todayStr(), 1);
+        }
+        saveReview();
+      }
+      if (ok) reviewStats.ok += 1; else reviewStats.bad += 1;
+      reviewIdx += 1;
+      showReviewCard();
+      refreshReviewUI();
+    }
+
+    function closeReview() {
+      document.getElementById('reviewOverlay').classList.add('hidden');
+      syncBodyScrollLock();
+      refreshReviewUI();
+    }
+
+    /* ---------- 6. 備份提醒 ---------- */
+    function checkBackupReminder() {
+      try {
+        const FIRST = 'futhark_atlas_first_use_v1';
+        const BACKUP = 'futhark_atlas_last_backup_v1';
+        const now = Date.now();
+        const first = Number(localStorage.getItem(FIRST));
+        if (!first) { localStorage.setItem(FIRST, String(now)); return; }
+        const last = Number(localStorage.getItem(BACKUP)) || 0;
+        const days = Math.floor((now - (last || first)) / 86400000);
+        const hasData =
+          Object.values(runeStatusMap).some(s => s !== 'unexplored') ||
+          Object.keys(runeNotesMap).length > 0 ||
+          Object.keys(runeReflectionsMap).length > 0 ||
+          drawLogsList.length > 0;
+        if (hasData && days >= 7) {
+          showSystemNotice(`你已經 ${days} 天沒有備份學習紀錄了。筆記只存在這個瀏覽器，建議點右上角「匯出 JSON」備份一次。`);
+        }
+      } catch (_) {}
+    }
+
+    /* ---------- 7. 其他包裝：進度更新、開關面板 ---------- */
+    const baseUpdateOverallProgress = updateOverallProgress;
+    updateOverallProgress = function () {
+      baseUpdateOverallProgress();
+      updateProgressGlow();
+      refreshReviewUI();
+    };
+
+    const baseOpenRuneDetail = openRuneDetail;
+    openRuneDetail = function (id) {
+      strokeAnimToken += 1;
+      baseOpenRuneDetail(id);
+    };
+
+    const baseCloseRuneDetail = closeRuneDetail;
+    closeRuneDetail = function () {
+      strokeAnimToken += 1;
+      baseCloseRuneDetail();
+      syncBodyScrollLock();
+    };
+
+    /* ---------- 8. 手機下滑關閉抽屜 ---------- */
+    function initDrawerSwipe() {
+      const closeBtn = document.getElementById('closeDetailBtn');
+      const panel = document.getElementById('runeDetailPanel');
+      const bar = closeBtn && closeBtn.closest('.sticky');
+      if (!bar || !panel) return;
+
+      bar.style.touchAction = 'pan-x';
+      const handle = document.createElement('div');
+      handle.setAttribute('aria-hidden', 'true');
+      handle.className = 'sm:hidden absolute left-1/2 -translate-x-1/2 top-1.5 w-10 h-1 rounded-full bg-white/25';
+      bar.appendChild(handle);
+
+      let startY = null;
+      let dy = 0;
+      bar.addEventListener('touchstart', e => {
+        if (window.innerWidth >= 640) return;
+        startY = e.touches[0].clientY;
+        dy = 0;
+        panel.style.transition = 'none';
+      }, { passive: true });
+      bar.addEventListener('touchmove', e => {
+        if (startY === null) return;
+        dy = Math.max(0, e.touches[0].clientY - startY);
+        panel.style.transform = `translateY(${dy}px)`;
+      }, { passive: true });
+      const end = () => {
+        if (startY === null) return;
+        startY = null;
+        panel.style.transition = 'transform .2s ease';
+        if (dy > 110) {
+          panel.style.transform = 'translateY(100%)';
+          setTimeout(() => {
+            closeRuneDetail();
+            panel.style.transform = '';
+            panel.style.transition = '';
+          }, 190);
+        } else {
+          panel.style.transform = '';
+          setTimeout(() => { panel.style.transition = ''; }, 220);
+        }
+      };
+      bar.addEventListener('touchend', end);
+      bar.addEventListener('touchcancel', end);
+    }
+
+    /* ---------- 9. 筆順按鈕 ---------- */
+    function injectStrokeButton() {
+      const toggle = document.getElementById('toggleGuideBtn');
+      if (!toggle || document.getElementById('strokeAnimBtn')) return;
+      const btn = document.createElement('button');
+      btn.id = 'strokeAnimBtn';
+      btn.type = 'button';
+      btn.textContent = '▶ 筆順動畫';
+      btn.className = 'px-2.5 py-1.5 rounded-xl bg-ember/20 hover:bg-ember/30 border border-ember/40 text-[11px] font-semibold text-emberBright transition-colors';
+      btn.addEventListener('click', playStrokeOrder);
+      toggle.parentNode.insertBefore(btn, toggle);
+    }
+
+    /* ---------- 10. 鍵盤快捷鍵 ---------- */
+    document.addEventListener('keydown', e => {
+      const isOpen = id => {
+        const el = document.getElementById(id);
+        return !!el && !el.classList.contains('hidden');
+      };
+
+      if (e.key === 'Escape') {
+        if (isOpen('drawStageOverlay')) { closeDrawStage(); return; }
+        if (isOpen('reviewOverlay')) { closeReview(); return; }
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const t = e.target;
+      const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+      if (typing) return;
+
+      if (isOpen('drawStageOverlay')) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipDrawCard(); }
+        return;
+      }
+      if (isOpen('reviewOverlay')) return;
+
+      const detailOpen = isOpen('runeDetailOverlay');
+      if (!detailOpen) {
+        if (e.key === '/') {
+          e.preventDefault();
+          const input = document.getElementById('runeSearchInput');
+          if (input) input.focus();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') { e.preventDefault(); navigateAdjacentRune(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); navigateAdjacentRune(1); }
+      else if (e.key === '1') setRuneLearningStatus(currentDetailRuneId, 'unexplored');
+      else if (e.key === '2') setRuneLearningStatus(currentDetailRuneId, 'explored');
+      else if (e.key === '3') setRuneLearningStatus(currentDetailRuneId, 'mastered');
+      else if (e.key === 's' || e.key === 'S') setDetailEnergyMode(currentEnergyMode === 'shadow' ? 'upright' : 'shadow');
+      else if (e.key === 'p' || e.key === 'P') playStrokeOrder();
+    });
+
+    /* ---------- 初始化 ---------- */
+    (function initExtras() {
+      syncReviewWithStatus(todayStr()); // 既有「已學會」符文第一次進入就列入今日複習
+      initAmbient();
+      updateProgressGlow();
+      updateViewButtons();
+      initDrawerSwipe();
+      injectStrokeButton();
+      refreshReviewUI();
+      renderLearningMap();
+      checkBackupReminder();
+    })();
+  </script>
+</body>
+</html>
