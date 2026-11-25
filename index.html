@@ -1940,6 +1940,20 @@
 
     const RUNE_MAP = Object.fromEntries(RUNES_DATA.map(r => [r.id, r]));
 
+    /**
+     * 抽牌用的隨機數：優先使用 crypto，並避免取餘數造成的偏差
+     * 回傳 0 到 n-1 的整數，每個值機率相同
+     */
+    function secureInt(n) {
+      if (window.crypto && crypto.getRandomValues) {
+        const limit = Math.floor(0x100000000 / n) * n;
+        const buf = new Uint32Array(1);
+        do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+        return buf[0] % n;
+      }
+      return Math.floor(Math.random() * n);
+    }
+
     // LocalStorage Keys
     const STORAGE_KEYS = {
       progress: 'futhark_atlas_progress_v2',
@@ -2177,7 +2191,7 @@
       const pool = isRetry
         ? RUNES_DATA.filter(r => r.id !== 'blank_unknown')
         : RUNES_DATA;
-      const picked = pool[Math.floor(Math.random() * pool.length)];
+      const picked = pool[secureInt(pool.length)];
       const qInput = document.getElementById('drawQuestionInput');
       const questionText = (qInput?.value || '').trim();
 
@@ -2191,7 +2205,7 @@
         question: questionText || '今日整體指引與覺察',
         runeId: picked.id,
         isRetry: Boolean(isRetry),
-        reversed: picked.id !== 'blank_unknown' && Math.random() < 0.5
+        reversed: picked.id !== 'blank_unknown' && secureInt(2) === 1
       };
 
       drawLogsList = [entry, ...drawLogsList].slice(0, 40);
@@ -2557,7 +2571,7 @@
     function triggerGuidedDraw() {
       const unexplored = RUNES_DATA.filter(r => (runeStatusMap[r.id] || 'unexplored') === 'unexplored');
       const pool = unexplored.length > 0 ? unexplored : RUNES_DATA;
-      const chosen = pool[Math.floor(Math.random() * pool.length)];
+      const chosen = pool[secureInt(pool.length)];
 
       guidedRuneId = chosen.id;
       renderLearningMap();
@@ -3561,7 +3575,7 @@
       const ids = getDueRunes().map(r => r.id);
       if (!ids.length) return;
       for (let i = ids.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = secureInt(i + 1);
         [ids[i], ids[j]] = [ids[j], ids[i]];
       }
       reviewQueue = ids;
@@ -4078,12 +4092,12 @@
       const sp = SPREADS[activeSpreadKey];
       const ids = RUNES_DATA.map(r => r.id);
       for (let i = ids.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = secureInt(i + 1);
         [ids[i], ids[j]] = [ids[j], ids[i]];
       }
       const cards = ids.slice(0, sp.positions.length).map(id => ({
         runeId: id,
-        reversed: id !== 'blank_unknown' && Math.random() < 0.5
+        reversed: id !== 'blank_unknown' && secureInt(2) === 1
       }));
       const now = new Date();
       const entry = {
